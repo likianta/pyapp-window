@@ -1,5 +1,5 @@
 
-### 1.0.0 (wip)
+### 1.0.0 (2024-05-20)
 
 - unify backend interfaces
 - fix exiting issue
