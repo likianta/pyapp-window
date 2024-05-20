@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "pyapp-window"
+version = "1.0.0b1"
+description = "Launch URL with native window in WebView mode. Multiple backend implementations are supported."
+authors = ["likianta <likianta@foxmail.com>"]
+# readme = "README.md"
+packages = [{ include = "pyapp_window" }]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+argsense = "^0.5.7"
+psutil = "*"
+# pywebview = { version = "*", platform = "win32" }
+# toga = "^0.4.0"
+toga = [
+    { version = "^0.4.0", platform = "darwin", python = ">=3.8,<3.13" },
+    { version = "^0.4.0", platform = "win32", python = ">=3.8,<3.13" },
+]
+# webui2 = "*"
+
+[[tool.poetry.source]]
+name = "tsinghua"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
+priority = "primary"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
