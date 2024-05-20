@@ -3,7 +3,7 @@ name = "pyapp-window"
 version = "1.0.0"
 description = "Launch URL with native window in WebView mode. Multiple backend implementations are supported."
 authors = ["likianta <likianta@foxmail.com>"]
-# readme = "README.md"
+readme = "README.md"
 packages = [{ include = "pyapp_window" }]
 
 [tool.poetry.dependencies]
