@@ -12,7 +12,7 @@ def open_native_window(
     **kwargs
 ) -> int:
     """
-    returns: 0 for one-off process, 1 for consistent running process.
+    returns: 0 for one-shot-off process, 1 for consistent running process.
     """
     if check_url:
         from .util import wait_webpage_ready
@@ -21,6 +21,8 @@ def open_native_window(
     if backend_engine == 'auto':
         if sys.platform == 'linux':
             backend_engine = 'webbrowser'
+        elif sys.platform == 'win32':
+            backend_engine = 'pywebview'
         else:
             try:
                 import toga
@@ -35,6 +37,11 @@ def open_native_window(
     
     if backend_engine == 'chrome_appmode':
         from .backend_implementations.chrome_appmode import Application
+        app = Application(title, url, size=size, **kwargs)
+        app.start()
+        return 1
+    elif backend_engine == 'pywebview':
+        from .backend_implementations.pywebview import Application
         app = Application(title, url, size=size, **kwargs)
         app.start()
         return 1
