@@ -1,3 +1,6 @@
+# PyApp Window
+
+A general-purpose native window launcher for a given url.
 
 ## Install
 
