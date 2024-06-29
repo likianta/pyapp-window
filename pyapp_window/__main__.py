@@ -4,11 +4,15 @@ from .webview_window import open_native_window
 
 
 @cli.cmd()
-def launch(url: str = None, port: int = None, size: str = '800:600') -> None:
+def launch(
+    title: str = 'My Application',
+    url: str = None,
+    port: int = None,
+    size: str = '800:600'
+) -> None:
     """
     kwargs:
-        port (-p):
-            if `url` is not specified, and `port` is set, it will open a -
+        port (-p): if `url` is not specified but `port` is set, it will open a -
             localhost url.
         size (-s):
     """
@@ -19,8 +23,9 @@ def launch(url: str = None, port: int = None, size: str = '800:600') -> None:
         url = 'http://' + url
     print(f'opening {url}')
     w, h = map(int, size.split(':'))
-    open_native_window('PyApp Window', url, size=(w, h))
+    open_native_window(title, url, size=(w, h), check_url=True)
 
 
 if __name__ == '__main__':
+    # pox -m pyapp_window -h
     cli.run(launch)

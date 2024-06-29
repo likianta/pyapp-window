@@ -1,4 +1,9 @@
 
+### 1.1.0 (wip)
+
+- add `pywebview` backend
+- run in independent process
+
 ### 1.0.0 (2024-05-20)
 
 - unify backend interfaces
