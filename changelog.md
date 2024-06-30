@@ -1,4 +1,8 @@
 
+### 2.0.0 (wip)
+
+- new paradigm.
+
 ### 1.1.0 (wip)
 
 - add `pywebview` backend

@@ -1,14 +1,16 @@
 from argsense import cli
 
-from .webview_window import open_native_window
+from .opener import open_window
 
 
 @cli.cmd()
 def launch(
-    title: str = 'My Application',
+    title: str = 'Pyapp Window',
     url: str = None,
+    host: str = None,
     port: int = None,
-    size: str = '800:600'
+    pos: str = 'center',
+    size: str = '800:600',
 ) -> None:
     """
     kwargs:
@@ -16,14 +18,23 @@ def launch(
             localhost url.
         size (-s):
     """
-    if url is None:
-        assert port is not None
-        url = f'http://localhost:{port}'
-    elif not url.startswith('http'):
-        url = 'http://' + url
-    print(f'opening {url}')
-    w, h = map(int, size.split(':'))
-    open_native_window(title, url, size=(w, h), check_url=True)
+    assert url or port, 'either `url` or `port` must be set.'
+    if ':' in pos:
+        x, y = map(int, pos.split(':'))
+        pos = (x, y)
+    if ':' in size:
+        w, h = map(int, size.split(':'))
+        size = (w, h)
+    open_window(
+        title,
+        url,
+        host=host,
+        port=port,
+        pos=pos,
+        size=size,
+        blocking=True,
+        verbose=False,
+    )
 
 
 if __name__ == '__main__':
