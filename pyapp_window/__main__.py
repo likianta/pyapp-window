@@ -5,12 +5,15 @@ from .opener import open_window
 
 @cli.cmd()
 def launch(
-    title: str = 'Pyapp Window',
+    # main params
     url: str = None,
-    host: str = None,
     port: int = None,
-    pos: str = 'center',
+    # secondary params
+    host: str = None,
     size: str = '800:600',
+    title: str = 'Pyapp Window',
+    pos: str = 'center',
+    backend: str = None,
 ) -> None:
     """
     kwargs:
@@ -34,6 +37,7 @@ def launch(
         size=size,
         blocking=True,
         verbose=False,
+        backend=backend,
     )
 
 

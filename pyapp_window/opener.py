@@ -1,3 +1,4 @@
+import os
 import sys
 import typing as t
 from subprocess import Popen
@@ -6,10 +7,11 @@ from time import sleep
 from urllib.error import URLError
 from urllib.request import urlopen
 
-import webview  # pip install pywebview
+import psutil
 from lk_utils import run_cmd_args
 from lk_utils import wait
 
+from .backend import select_backend
 from .utils import normalize_pos
 from .utils import normalize_size
 
@@ -25,6 +27,7 @@ def open_window(
     wait_url_ready: bool = False,
     blocking: bool = True,
     verbose: bool = False,
+    backend: str = None,
     close_window_to_exit: bool = True,
 ) -> None:
     """
@@ -48,10 +51,10 @@ def open_window(
         url = 'http://{}:{}'.format(host, port)
     
     if size == 'fullscreen':  # another way to set fullscreen
-        is_fullscreen = True
+        fullscreen = True
         size = (1200, 900)
     else:
-        is_fullscreen = False
+        fullscreen = False
         size = normalize_size(size)
     pos = normalize_pos(pos, size)
     print(pos, size, ':v')
@@ -59,26 +62,22 @@ def open_window(
     if wait_url_ready:
         _wait_webpage_ready(url)
     if blocking:
-        # TODO: how to set application icon?
-        webview.create_window(
-            title,
-            url,
-            x=pos[0],
-            y=pos[1],
-            width=size[0],
-            height=size[1],
-            fullscreen=is_fullscreen,
+        select_backend(prefer=backend)(
+            icon=icon,
+            fullscreen=fullscreen,
+            pos=pos,
+            size=size,
+            title=title,
+            url=url,
         )
-        webview.start()
         if close_window_to_exit:
-            sys.exit()
+            _clean_exit()
     else:
         # fmt:off
         proc = run_cmd_args(
             (sys.executable, '-m', 'pyapp_window', title, url),
             ('--pos', '{}:{}'.format(*pos)),
-            ('--size', 'fullscreen' if is_fullscreen
-                else '{}:{}'.format(*size)),
+            ('--size', 'fullscreen' if fullscreen else '{}:{}'.format(*size)),
             blocking=False,
             verbose=verbose,
         )
@@ -102,5 +101,24 @@ def _watch_status(popen_proc: Popen) -> None:
     while True:
         if popen_proc.poll() is not None:
             print('user closed window', ':vs')
-            sys.exit()
+            # sys.exit()
+            _clean_exit()
+            return
         sleep(1)
+
+
+def _clean_exit() -> None:
+    pid = os.getpid()
+    host = psutil.Process(pid)
+    print('exit process', ':vs')
+    # print('kill process [{}] {}'.format(pid, host.name()), ':v4s')
+    for child in host.children(recursive=True):
+        try:
+            print('[red dim]|- kill \\[{}] {}[/]'.format(
+                child.pid, child.name()), ':sr'
+            )
+            child.kill()
+        except psutil.NoSuchProcess:
+            pass
+    # host.kill()
+    sys.exit()

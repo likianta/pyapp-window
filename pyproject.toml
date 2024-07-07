@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyapp-window"
-version = "2.0.0a0"
+version = "2.0.0a7"
 description = "Launch URL with native window in WebView mode. Multiple backend implementations are supported."
 authors = ["likianta <likianta@foxmail.com>"]
 readme = "README.md"
@@ -9,20 +9,33 @@ packages = [{ include = "pyapp_window" }]
 [tool.poetry.dependencies]
 python = "^3.8"
 argsense = "^0.5.8"
-lk-utils = "^2.10.3"
+# lk-utils = "^2.10.4"
+lk-utils = { version = "^2.10.5b4", source = "likianta-host" }
 psutil = "*"
-pywebview = { version = "^5.1", platform = "win32", python = ">=3.8,<3.13" }
 # toga = "^0.4.0"
-# toga = [
-#     { version = "^0.4.0", platform = "darwin", python = ">=3.8,<3.13" },
-#     # { version = "^0.4.0", platform = "win32", python = ">=3.8,<3.13" },
-# ]
-# webui2 = "*"
+toga = [
+    { version = "^0.4.0", platform = "darwin", python = ">=3.8,<3.13" },
+    { version = "^0.4.0", platform = "win32", python = ">=3.8,<3.13" },
+]
+webui2 = [
+    { version = "^2.4.5", platform = "darwin" },
+    { version = "^2.4.5", platform = "linux" },
+]
+
+[tool.poetry.group.dev.dependencies]
+pywebview = { version = "^5.1", platform = "win32", python = ">=3.8,<3.13" }
+webui2 = "^2.4.5"  # https://github.com/webui-dev/python-webui
+wxpython = "^4.2.1"
 
 [[tool.poetry.source]]
 name = "tsinghua"
 url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
 priority = "primary"
+
+[[tool.poetry.source]]
+name = "likianta-host"
+url = "http://likianta.pro:2006/"
+priority = "supplemental"
 
 [build-system]
 requires = ["poetry-core"]
