@@ -1,15 +1,11 @@
-import os
 import sys
 import typing as t
-from subprocess import Popen
-from threading import Thread
-from time import sleep
 from urllib.error import URLError
 from urllib.request import urlopen
 
-import psutil
 from lk_utils import run_cmd_args
 from lk_utils import wait
+from lk_utils.subproc import Popen
 
 from .backend import select_backend
 from .utils import normalize_pos
@@ -29,7 +25,7 @@ def open_window(
     verbose: bool = False,
     backend: str = None,
     close_window_to_exit: bool = True,
-) -> None:
+) -> t.Optional[Popen]:
     """
     params:
         url: if url is set, host and port will be ignored.
@@ -71,19 +67,17 @@ def open_window(
             url=url,
         )
         if close_window_to_exit:
-            _clean_exit()
+            sys.exit()
     else:
-        # fmt:off
-        proc = run_cmd_args(
-            (sys.executable, '-m', 'pyapp_window', title, url),
+        return run_cmd_args(
+            (sys.executable, '-m', 'pyapp_window'),
+            ('--title', title),
+            ('--url', url),
             ('--pos', '{}:{}'.format(*pos)),
             ('--size', 'fullscreen' if fullscreen else '{}:{}'.format(*size)),
             blocking=False,
             verbose=verbose,
         )
-        # fmt:on
-        if close_window_to_exit:
-            Thread(target=_watch_status, args=(proc,), daemon=True).start()
 
 
 def _wait_webpage_ready(url: str, timeout: float = 10) -> None:
@@ -95,30 +89,3 @@ def _wait_webpage_ready(url: str, timeout: float = 10) -> None:
                 return
         except (TimeoutError, URLError):
             continue
-
-
-def _watch_status(popen_proc: Popen) -> None:
-    while True:
-        if popen_proc.poll() is not None:
-            print('user closed window', ':vs')
-            # sys.exit()
-            _clean_exit()
-            return
-        sleep(1)
-
-
-def _clean_exit() -> None:
-    pid = os.getpid()
-    host = psutil.Process(pid)
-    print('exit process', ':vs')
-    # print('kill process [{}] {}'.format(pid, host.name()), ':v4s')
-    for child in host.children(recursive=True):
-        try:
-            print('[red dim]|- kill \\[{}] {}[/]'.format(
-                child.pid, child.name()), ':sr'
-            )
-            child.kill()
-        except psutil.NoSuchProcess:
-            pass
-    # host.kill()
-    sys.exit()
