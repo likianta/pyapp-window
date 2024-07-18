@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyapp-window"
-version = "2.0.0a9"
+version = "2.0.0"
 description = "Launch URL with native window in WebView mode. Multiple backend implementations are supported."
 authors = ["likianta <likianta@foxmail.com>"]
 readme = "README.md"
@@ -9,8 +9,8 @@ packages = [{ include = "pyapp_window" }]
 [tool.poetry.dependencies]
 python = "^3.8"
 argsense = "^0.5.8"
-# lk-utils = "^2.10.4"
-lk-utils = { version = "^2.10.7a0", source = "likianta-host" }
+lk-utils = "^2.10.7"
+# lk-utils = { version = "^2.10.7a0", source = "likianta-host" }
 # psutil = "*"
 # toga = "^0.4.0"
 toga = [

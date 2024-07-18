@@ -1,10 +1,7 @@
 
-### 2.0.0 (wip)
+### 2.0.0 (2024-07-18)
 
 - new paradigm.
-
-### 1.1.0 (wip)
-
 - add `pywebview` backend
 - run in independent process
 
