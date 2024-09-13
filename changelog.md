@@ -1,7 +1,11 @@
 
+### 2.0.1 (wip)
+
+- faster wait for webpage ready
+
 ### 2.0.0 (2024-07-18)
 
-- new paradigm.
+- new paradigm
 - add `pywebview` backend
 - run in independent process
 

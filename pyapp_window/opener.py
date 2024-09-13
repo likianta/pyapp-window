@@ -1,10 +1,12 @@
+import os
 import sys
 import typing as t
+from time import sleep
 from time import time
-from urllib.error import URLError
-from urllib.request import urlopen
 
+from lk_logger import logger
 from lk_utils import run_cmd_args
+from lk_utils import wait
 from lk_utils.subproc import Popen
 
 from .backend import select_backend
@@ -57,6 +59,7 @@ def open_window(
     
     if wait_url_ready:
         _wait_webpage_ready(url)
+        # _wait_webpage_ready_2()
     if blocking:
         select_backend(prefer=backend)(
             icon=icon,
@@ -80,16 +83,27 @@ def open_window(
         )
 
 
-def _wait_webpage_ready(url: str, timeout: float = 10) -> None:
-    print(':t2s')
+def _wait_webpage_ready(url: str, timeout: float = 30) -> None:
+    import requests
     start = time()
-    while True:
-        try:
-            if urlopen(url, timeout=1):
-                print('webpage ready', ':t2')
-                return
-        except (TimeoutError, URLError):
-            if time() - start > timeout:
-                raise TimeoutError('wait webpage ready timeout')
+    with logger.timing():
+        while True:
+            r = requests.head(url)
+            if r.status_code in (200, 405):
+                print('webpage ready', url, ':tv2')
+                break
+            elif r.status_code == 502:
+                sleep(0.5)
+                if time() - start > timeout:
+                    raise TimeoutError('timeout waiting for webpage ready')
+                continue
             else:
-                print('wait webpage ready...', ':vi2t2')
+                raise Exception(r.status_code)
+
+
+def _wait_webpage_ready_2(timeout: float = 30) -> None:
+    with logger.timing():
+        for _ in wait(timeout, 0.2):
+            if os.getenv('PYAPP_WINDOW_TARGET_READY'):
+                print('webpage ready', ':t')
+                break
