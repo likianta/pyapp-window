@@ -23,6 +23,7 @@ def open_window(
     pos: t.Union[t.Tuple[int, int], t.Literal['center']] = 'center',
     size: t.Union[t.Tuple[int, int], t.Literal['fullscreen']] = (1200, 900),
     wait_url_ready: bool = False,
+    splash_screen: str = None,
     blocking: bool = True,
     verbose: bool = False,
     backend: str = None,
@@ -57,15 +58,17 @@ def open_window(
     pos = normalize_pos(pos, size)
     print(pos, size, ':v')
     
-    if wait_url_ready:
+    if wait_url_ready and not splash_screen:
         _wait_webpage_ready(url)
         # _wait_webpage_ready_2()
+    
     if blocking:
         select_backend(prefer=backend)(
             icon=icon,
             fullscreen=fullscreen,
             pos=pos,
             size=size,
+            splash_screen=splash_screen,
             title=title,
             url=url,
         )
@@ -78,6 +81,7 @@ def open_window(
             ('--url', url),
             ('--pos', '{}:{}'.format(*pos)),
             ('--size', 'fullscreen' if fullscreen else '{}:{}'.format(*size)),
+            ('--splash_screen', splash_screen),
             blocking=False,
             verbose=verbose,
         )

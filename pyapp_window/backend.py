@@ -105,11 +105,17 @@ def open_with_toga(
     icon: str = None,
     pos: T.Position,
     size: T.Size,
+    splash_screen: str = None,
     title: str,
     url: str,
     **_
 ) -> None:
+    import requests
     import toga
+    from lk_logger import logger
+    from lk_utils import new_thread
+    from time import sleep, time
+    from toga.style.pack import CENTER, Pack
     
     class MyApp(toga.App):
         def __init__(self) -> None:
@@ -117,18 +123,61 @@ def open_with_toga(
         
         # noinspection PyTypeChecker
         def startup(self) -> None:
+            if splash_screen:
+                img_width = round(size[0] * 0.8)
+                h_padding = (size[0] - img_width) // 2
+                print(size[0], img_width, h_padding, ':v')
+                view = toga.ImageView(
+                    toga.Image(splash_screen),
+                    style=Pack(
+                        alignment=CENTER,
+                        flex=1,
+                        padding_left=h_padding,
+                        padding_right=h_padding,
+                    )
+                )
+                self._wait_webpage_ready(url)
+            else:
+                view = toga.WebView(url=url)
             self.main_window = toga.MainWindow(
                 id='main',
                 title=title,
                 position=pos,
                 size=size,
-                content=toga.WebView(url=url),
+                content=view,
                 minimizable=False if sys.platform == 'win32' else True,
                 #   a workaround to prevent the window from being too small.
             )
             if fullscreen:
                 self.main_window.full_screen = True
             self.main_window.show()
+        
+        @new_thread()
+        def _wait_webpage_ready(self, url: str, timeout: float = 30) -> None:
+            start = time()
+            with logger.timing():
+                while True:
+                    r = requests.head(url)
+                    if 200 <= r.status_code < 400 or r.status_code in (405,):
+                        print('webpage ready', url, ':tv2')
+                        break
+                    elif r.status_code == 502:
+                        sleep(0.5)
+                        if time() - start > timeout:
+                            raise TimeoutError(
+                                'timeout waiting for webpage ready'
+                            )
+                        continue
+                    else:
+                        raise Exception(r.status_code)
+              
+            # don't update ui in non-main thread directly, instead, toga has
+            # pre-set `self.loop` for this purpose.
+            # https://stackoverflow.com/a/77350586/9695911
+            def _replace_view() -> None:
+                self.main_window.content = toga.WebView(url=url)
+            
+            self.loop.call_soon_threadsafe(_replace_view)
     
     app = MyApp()
     app.main_loop()
