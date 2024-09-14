@@ -5,5 +5,7 @@
 # from .webview_window.util import get_screen_size
 
 from .opener import open_window
+from .util import get_screen_size
+from .util import wait_webpage_ready
 
-__version__ = '2.0.0'
+__version__ = '2.1.0'

@@ -1,17 +1,13 @@
-import os
 import sys
 import typing as t
-from time import sleep
-from time import time
 
-from lk_logger import logger
 from lk_utils import run_cmd_args
-from lk_utils import wait
 from lk_utils.subproc import Popen
 
 from .backend import select_backend
-from .utils import normalize_pos
-from .utils import normalize_size
+from .util import normalize_position
+from .util import normalize_size
+from .util import wait_webpage_ready
 
 
 def open_window(
@@ -55,12 +51,11 @@ def open_window(
     else:
         fullscreen = False
         size = normalize_size(size)
-    pos = normalize_pos(pos, size)
+    pos = normalize_position(pos, size)
     print(pos, size, ':v')
     
     if wait_url_ready and not splash_screen:
-        _wait_webpage_ready(url)
-        # _wait_webpage_ready_2()
+        wait_webpage_ready(url)
     
     if blocking:
         select_backend(prefer=backend)(
@@ -85,29 +80,3 @@ def open_window(
             blocking=False,
             verbose=verbose,
         )
-
-
-def _wait_webpage_ready(url: str, timeout: float = 30) -> None:
-    import requests
-    start = time()
-    with logger.timing():
-        while True:
-            r = requests.head(url)
-            if r.status_code in (200, 405):
-                print('webpage ready', url, ':tv2')
-                break
-            elif r.status_code == 502:
-                sleep(0.5)
-                if time() - start > timeout:
-                    raise TimeoutError('timeout waiting for webpage ready')
-                continue
-            else:
-                raise Exception(r.status_code)
-
-
-def _wait_webpage_ready_2(timeout: float = 30) -> None:
-    with logger.timing():
-        for _ in wait(timeout, 0.2):
-            if os.getenv('PYAPP_WINDOW_TARGET_READY'):
-                print('webpage ready', ':t')
-                break

@@ -110,12 +110,10 @@ def open_with_toga(
     url: str,
     **_
 ) -> None:
-    import requests
     import toga
-    from lk_logger import logger
-    from lk_utils import new_thread, xpath
-    from time import sleep, time
+    from lk_utils import new_thread
     from toga.style.pack import CENTER, COLUMN, Pack
+    from .util import wait_webpage_ready
     
     class MyApp(toga.App):
         _progress_bar: t.Optional[toga.ProgressBar]
@@ -199,23 +197,8 @@ def open_with_toga(
         
         @new_thread()
         def _wait_webpage_ready(self, url: str, timeout: float = 30) -> None:
-            start = time()
-            with logger.timing():
-                while True:
-                    r = requests.head(url)
-                    if 200 <= r.status_code < 400 or r.status_code in (405,):
-                        print('webpage ready', url, ':tv2')
-                        break
-                    elif r.status_code == 502:
-                        sleep(0.5)
-                        if time() - start > timeout:
-                            raise TimeoutError(
-                                'timeout waiting for webpage ready'
-                            )
-                        continue
-                    else:
-                        raise Exception(r.status_code)
-              
+            wait_webpage_ready(url, timeout)
+            
             # don't update ui in non-main thread directly, instead, toga has
             # pre-set `self.loop` for this purpose.
             # https://stackoverflow.com/a/77350586/9695911
