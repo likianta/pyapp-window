@@ -113,11 +113,13 @@ def open_with_toga(
     import requests
     import toga
     from lk_logger import logger
-    from lk_utils import new_thread
+    from lk_utils import new_thread, xpath
     from time import sleep, time
-    from toga.style.pack import CENTER, Pack
+    from toga.style.pack import CENTER, COLUMN, Pack
     
     class MyApp(toga.App):
+        _progress_bar: t.Optional[toga.ProgressBar]
+        
         def __init__(self) -> None:
             super().__init__(formal_name=title, app_id=appid, icon=icon)
         
@@ -127,18 +129,61 @@ def open_with_toga(
                 img_width = round(size[0] * 0.8)
                 h_padding = (size[0] - img_width) // 2
                 print(size[0], img_width, h_padding, ':v')
-                view = toga.ImageView(
-                    toga.Image(splash_screen),
+                # view = toga.ImageView(
+                #     toga.Image(splash_screen),
+                #     style=Pack(
+                #         alignment=CENTER,
+                #         flex=1,
+                #         padding_left=h_padding,
+                #         padding_right=h_padding,
+                #     )
+                # )
+                view = toga.Box(
+                    children=(
+                        toga.ImageView(
+                            toga.Image(splash_screen),
+                            style=Pack(
+                                alignment=CENTER,
+                                flex=1,
+                                padding_left=h_padding,
+                                padding_right=h_padding,
+                            )
+                        ),
+                        # toga.ImageView(
+                        #     toga.Image(xpath('loading_motion_blur_2.png')),
+                        #     style=Pack(
+                        #         alignment=CENTER,
+                        #         # flex=1,
+                        #         width=img_width,
+                        #         padding_left=h_padding,
+                        #         padding_right=h_padding,
+                        #     )
+                        # ),
+                        bar := toga.ProgressBar(
+                            max=None,
+                            style=Pack(
+                                alignment=CENTER,
+                                # color='#E31B25',
+                                # background_color='#E31B25',
+                                padding_left=h_padding,
+                                padding_right=h_padding,
+                                padding_bottom=20,
+                                width=img_width,
+                            )
+                        ),
+                    ),
                     style=Pack(
-                        alignment=CENTER,
-                        flex=1,
-                        padding_left=h_padding,
-                        padding_right=h_padding,
+                        direction=COLUMN
                     )
                 )
+                self._progress_bar = bar
+                self._progress_bar.start()
+                # TEST: if you want to test only splash screen, comment below
+                #   line.
                 self._wait_webpage_ready(url)
             else:
                 view = toga.WebView(url=url)
+                self._progress_bar = None
             self.main_window = toga.MainWindow(
                 id='main',
                 title=title,
@@ -175,6 +220,7 @@ def open_with_toga(
             # pre-set `self.loop` for this purpose.
             # https://stackoverflow.com/a/77350586/9695911
             def _replace_view() -> None:
+                self._progress_bar.stop()
                 self.main_window.content = toga.WebView(url=url)
             
             self.loop.call_soon_threadsafe(_replace_view)
