@@ -20,6 +20,10 @@ class T:
 
 def get_screen_size() -> T.Size1:
     def via_tkinter() -> T.Size1:
+        # notice: on windows, the size is taking account of the scale factor!
+        # i.e. if your screen resolution is 3456x2160, and the scale factor is
+        # 150%, the return value will be (2304, 1440) instead of (3456, 2160).
+        # see also `normalize_size : if sys.platform == 'win32'`.
         import tkinter
         root = tkinter.Tk()
         width = root.winfo_screenwidth()
@@ -82,6 +86,8 @@ def normalize_size(size: T.Size0) -> T.Size1:
         
         # resolve fractional value
         w0, h0 = get_screen_size()
+        # print((w0, h0), (w, h), ':v')
+        
         if w < 1 or h < 1:
             if w < 1:
                 w = round(w0 * w)
@@ -90,6 +96,13 @@ def normalize_size(size: T.Size0) -> T.Size1:
         assert w > 0 and h > 0
         
         # adapt to screen size
+        if sys.platform == 'win32':
+            # detect scale factor
+            import ctypes
+            factor = ctypes.windll.shcore.GetScaleFactorForDevice(0) / 100
+            #   e.g. 1.5, means 150%
+            w, h = round(w / factor), round(h / factor)
+        
         if w > w0:
             r = h / w
             w = round(w0 * 0.95)
