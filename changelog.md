@@ -1,7 +1,10 @@
 
-### 2.0.1 (wip)
+### 2.1.0 (2024-10-25)
 
-- faster wait for webpage ready
+- faster checking url ready
+- splash screen
+- fix getting screen size accounting into scale factor
+- fix proxy issue when checking url
 
 ### 2.0.0 (2024-07-18)
 

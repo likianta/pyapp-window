@@ -1,8 +1,9 @@
-# from .launcher import launch
-# from .launcher import open_widow
-# from .webview_window import open_native_window
-# from .webview_window.util import get_center_pos
-# from .webview_window.util import get_screen_size
+if 1:
+    import os
+    if 'HTTP_PROXY' not in os.environ:
+        # see `.util.wait_webpage_ready : r = requests.head(url)`
+        os.environ['HTTP_PROXY'] = 'http://127.0.0.1:7890'
+        os.environ['HTTPS_PROXY'] = 'http://127.0.0.1:7890'
 
 from .opener import open_window
 from .util import get_screen_size

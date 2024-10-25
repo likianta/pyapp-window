@@ -18,7 +18,7 @@ def open_window(
     port: int = None,
     pos: t.Union[t.Tuple[int, int], t.Literal['center']] = 'center',
     size: t.Union[t.Tuple[int, int], t.Literal['fullscreen']] = (1200, 900),
-    wait_url_ready: bool = False,
+    check_url: bool = False,
     splash_screen: str = None,
     blocking: bool = True,
     verbose: bool = False,
@@ -54,7 +54,7 @@ def open_window(
     pos = normalize_position(pos, size)
     print(pos, size, ':v')
     
-    if wait_url_ready and not splash_screen:
+    if check_url and not splash_screen:
         wait_webpage_ready(url)
     
     if blocking:

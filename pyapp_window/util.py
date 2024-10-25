@@ -124,6 +124,11 @@ def wait_webpage_ready(url: str, timeout: float = 30) -> None:
     with logger.timing():
         while True:
             r = requests.head(url)
+            # r = requests.head(url, proxies={'http': None, 'https': None})
+            # r = requests.head(url, proxies={
+            #     'http': 'http://127.0.0.1:7890',
+            #     'https': 'http://127.0.0.1:7890',
+            # })
             if 200 <= r.status_code < 400 or r.status_code in (405,):
                 print('webpage ready', url, ':ptv2')
                 break
