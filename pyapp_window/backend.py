@@ -183,13 +183,7 @@ def open_with_toga(
                 view = toga.WebView(url=url)
                 self._progress_bar = None
             self.main_window = toga.MainWindow(
-                id='main',
-                title=title,
-                position=pos,
-                size=size,
-                content=view,
-                minimizable=False if sys.platform == 'win32' else True,
-                #   a workaround to prevent the window from being too small.
+                id='main', title=title, position=pos, size=size, content=view,
             )
             if fullscreen:
                 self.main_window.full_screen = True

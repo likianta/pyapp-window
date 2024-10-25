@@ -10,7 +10,7 @@ def launch(
     port: int = None,
     # secondary params
     host: str = None,
-    size: str = '800:600',
+    size: str = '1600:1200',
     title: str = 'Pyapp Window',
     pos: str = 'center',
     backend: str = None,

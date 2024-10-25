@@ -357,47 +357,47 @@ reference = "tsinghua"
 
 [[package]]
 name = "lk-logger"
-version = "6.0.0a19"
+version = "6.0.0"
 description = "Python print with source map and varnames."
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "lk_logger-6.0.0a19-py3-none-any.whl", hash = "sha256:376aad11a5346a0fd4b72d735203dbb6e8940252e5d5db3c70a5d3f153702b7c"},
+    {file = "lk_logger-6.0.0-py3-none-any.whl", hash = "sha256:6972895ce15c4651cda4373f1f220c925c57edea2a8938c124dda7600f422a0f"},
 ]
 
 [package.dependencies]
 rich = ">=13.8,<14.0"
 
 [package.extras]
-svg = ["svg-ultralight"]
+ext = ["svg-ultralight"]
 
 [package.source]
 type = "legacy"
-url = "http://likianta.pro:2131"
-reference = "likianta-host"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+reference = "tsinghua"
 
 [[package]]
 name = "lk-utils"
-version = "2.11.0a12"
+version = "3.0.0"
 description = "LK Utils is a set of utility wrappers made for data processing."
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "lk_utils-2.11.0a12-py3-none-any.whl", hash = "sha256:daf79f5b3561f85c364f553f64c33e670ab0aeb97d44249f5d1db802cc2a266e"},
+    {file = "lk_utils-3.0.0-py3-none-any.whl", hash = "sha256:de4d545e244bf97dfd0cb52f006877965491b1a8429f3cc046e3abfe91342e33"},
 ]
 
 [package.dependencies]
 argsense = ">=0.5.8,<0.6.0"
-lk-logger = ">=6.0.0a19,<7.0.0"
+lk-logger = ">=6.0.0,<7.0.0"
 psutil = ">=6.0.0,<7.0.0"
 pyyaml = ">=6.0.0,<7.0.0"
-rich = ">=13.0.0,<14.0.0"
+rich = ">=13.8.0,<14.0.0"
 typing-extensions = ">=4.0.0,<5.0.0"
 
 [package.source]
 type = "legacy"
-url = "http://likianta.pro:2131"
-reference = "likianta-host"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+reference = "tsinghua"
 
 [[package]]
 name = "markdown-it-py"
@@ -874,18 +874,18 @@ reference = "tsinghua"
 
 [[package]]
 name = "toga"
-version = "0.4.5"
+version = "0.4.7"
 description = "A Python native, OS native GUI toolkit."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "toga-0.4.5-py3-none-any.whl", hash = "sha256:8091f112bd36535e371eed832225cab635751d3d118c5056cc1a32431d6260b5"},
-    {file = "toga-0.4.5.tar.gz", hash = "sha256:04242d2e6aeabc1001b206b29c5a57bbbf0e77e5e2a547343da35c21dd2912b2"},
+    {file = "toga-0.4.7-py3-none-any.whl", hash = "sha256:ff094c0d99abe1afad984f9760ae808b8418e296bf56e3b05427f50a961665cf"},
+    {file = "toga-0.4.7.tar.gz", hash = "sha256:8817c501cbde24082df557586f2fcce249d3d4e7bbe65e0a6adfb4a3f92468fb"},
 ]
 
 [package.dependencies]
-toga-cocoa = {version = "0.4.5", markers = "sys_platform == \"darwin\""}
-toga-winforms = {version = "0.4.5", markers = "sys_platform == \"win32\""}
+toga-cocoa = {version = "0.4.7", markers = "sys_platform == \"darwin\""}
+toga-winforms = {version = "0.4.7", markers = "sys_platform == \"win32\""}
 
 [package.source]
 type = "legacy"
@@ -894,19 +894,19 @@ reference = "tsinghua"
 
 [[package]]
 name = "toga-cocoa"
-version = "0.4.5"
+version = "0.4.7"
 description = "A Cocoa (macOS) backend for the Toga widget toolkit."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "toga_cocoa-0.4.5-py3-none-any.whl", hash = "sha256:d2b22213c2a6277333b71d9e46e0ceae9772e466c045e9ee76f3956d5ae3aa02"},
-    {file = "toga_cocoa-0.4.5.tar.gz", hash = "sha256:38e51cefa3637fa104fd5d407fdb683adfa07357b2978feb19ce3b6fb9a0429d"},
+    {file = "toga_cocoa-0.4.7-py3-none-any.whl", hash = "sha256:16babfd36adbc6336baa4c856aca5e480900c9ee5664825ea78a57b0f2ac5ba4"},
+    {file = "toga_cocoa-0.4.7.tar.gz", hash = "sha256:2bf7230d7fae341d7816f1a6e4305d7d2faab74cfc439b5b4f3c4abced7394ca"},
 ]
 
 [package.dependencies]
 fonttools = ">=4.42.1,<5.0.0"
-rubicon-objc = ">=0.4.7,<0.5.0"
-toga-core = "0.4.5"
+rubicon-objc = ">=0.4.9,<0.5.0"
+toga-core = "0.4.7"
 
 [package.source]
 type = "legacy"
@@ -915,13 +915,13 @@ reference = "tsinghua"
 
 [[package]]
 name = "toga-core"
-version = "0.4.5"
+version = "0.4.7"
 description = "A Python native, OS native GUI toolkit."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "toga_core-0.4.5-py3-none-any.whl", hash = "sha256:db37c49e947f1a1336685f8196d7975b7c519b5899f39d9d0de6174f442deb5a"},
-    {file = "toga_core-0.4.5.tar.gz", hash = "sha256:3789bad8fe9cea35a09679292aa95ff4a639e2af832f8158fb7b8fe2ac46bd2a"},
+    {file = "toga_core-0.4.7-py3-none-any.whl", hash = "sha256:79c0ea5704747236976097b415ddb5422a88562ab2f3ba4c2f5160517638c77f"},
+    {file = "toga_core-0.4.7.tar.gz", hash = "sha256:cbd0412af93956217da778b076053b155bb26633d834ba8aae5d219f12687445"},
 ]
 
 [package.dependencies]
@@ -929,8 +929,8 @@ importlib-metadata = {version = ">=4.4.0", markers = "python_version <= \"3.9\""
 travertino = ">=0.3.0"
 
 [package.extras]
-dev = ["Pillow (==10.3.0)", "coverage[toml] (==7.5.3)", "pre-commit (==3.5.0)", "pre-commit (==3.7.1)", "pytest (==8.2.2)", "pytest-asyncio (==0.23.7)", "pytest-freezer (==0.4.8)", "setuptools-scm (==8.1.0)", "tox (==4.15.1)", "typing-extensions (==4.9.0)"]
-docs = ["Pillow (==10.3.0)", "furo (==2024.5.6)", "pyenchant (==3.2.2)", "sphinx (==7.1.2)", "sphinx (==7.3.7)", "sphinx-autobuild (==2021.3.14)", "sphinx-autobuild (==2024.4.16)", "sphinx-copybutton (==0.5.2)", "sphinx-csv-filter (==0.4.1)", "sphinx-tabs (==3.4.5)", "sphinx-toolbox (==3.5.0)", "sphinxcontrib-spelling (==8.0.0)"]
+dev = ["Pillow (==10.4.0)", "coverage-conditional-plugin (==0.9.0)", "coverage[toml] (==7.6.1)", "pre-commit (==3.5.0)", "pre-commit (==3.8.0)", "pytest (==8.3.3)", "pytest-asyncio (==0.24.0)", "pytest-freezer (==0.4.8)", "setuptools-scm (==8.1.0)", "tox (==4.18.1)", "typing-extensions (==4.9.0)"]
+docs = ["Pillow (==10.4.0)", "furo (==2024.8.6)", "pyenchant (==3.2.2)", "sphinx (==8.0.2)", "sphinx-autobuild (==2024.9.3)", "sphinx-copybutton (==0.5.2)", "sphinx-csv-filter (==0.4.2)", "sphinx-tabs (==3.4.5)", "sphinx-toolbox (==3.8.0)", "sphinxcontrib-spelling (==8.0.0)"]
 
 [package.source]
 type = "legacy"
@@ -939,18 +939,18 @@ reference = "tsinghua"
 
 [[package]]
 name = "toga-winforms"
-version = "0.4.5"
+version = "0.4.7"
 description = "A Windows backend for the Toga widget toolkit using the WinForms API."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "toga_winforms-0.4.5-py3-none-any.whl", hash = "sha256:ded6ba6b3150e88a20b1e806fce6133f3223cb5c38dd012b8a33c3cac089d2eb"},
-    {file = "toga_winforms-0.4.5.tar.gz", hash = "sha256:ba2082d9dd67e01c6c922b38b46f2b449bed1838a6f804668902df1f0d6c79c4"},
+    {file = "toga_winforms-0.4.7-py3-none-any.whl", hash = "sha256:b65c19e06c38011aa8103fc3a6e60dfbb2cd131707210a210ac101d947955196"},
+    {file = "toga_winforms-0.4.7.tar.gz", hash = "sha256:2e092899bc0a0264f6cd3533375004f9d7eb3cd444b41958a84c4e327b26737a"},
 ]
 
 [package.dependencies]
 pythonnet = ">=3.0.0"
-toga-core = "0.4.5"
+toga-core = "0.4.7"
 
 [package.source]
 type = "legacy"
@@ -1088,4 +1088,4 @@ reference = "tsinghua"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "c0c99552791e3a48192da02da533bb33509cb171260cb8341a0f88c84fb1f7a3"
+content-hash = "f869dc16560f1555108d4fe2672a635670700679fff9d24b11d885d26a5fcc1e"
