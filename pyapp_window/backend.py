@@ -200,7 +200,7 @@ def open_with_toga(
                 self._progress_bar.stop()
                 self.main_window.content = toga.WebView(url=url)
             
-            self.loop.call_soon_threadsafe(_replace_view)
+            self.loop.call_soon_threadsafe(_replace_view)  # noqa
     
     app = MyApp()
     app.main_loop()

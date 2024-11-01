@@ -1,11 +1,17 @@
+import os
 import re
 import subprocess as sp
 import sys
 import typing as t
 from time import sleep, time
 
+import lk_logger
 import requests
-from lk_logger import logger
+
+_has_proxy_set_before = 'HTTP_PROXY' in os.environ
+if not _has_proxy_set_before:
+    os.environ['HTTP_PROXY'] = 'http://127.0.0.1:7890'
+    os.environ['HTTPS_PROXY'] = 'http://127.0.0.1:7890'
 
 
 class T:
@@ -121,15 +127,20 @@ def normalize_size(size: T.Size0) -> T.Size1:
 
 def wait_webpage_ready(url: str, timeout: float = 30) -> None:
     start = time()
-    with logger.timing():
+    with lk_logger.timing():
         while True:
-            r = requests.head(url)
-            # r = requests.head(url, proxies={'http': None, 'https': None})
+            if _has_proxy_set_before:
+                r = requests.head(url)
+            else:
+                r = requests.head(url, proxies={'http': None, 'https': None})
             # r = requests.head(url, proxies={
             #     'http': 'http://127.0.0.1:7890',
             #     'https': 'http://127.0.0.1:7890',
             # })
-            if 200 <= r.status_code < 400 or r.status_code in (405,):
+            if (
+                200 <= r.status_code < 400 or
+                r.status_code in (400, 405, 500)
+            ):
                 print('webpage ready', url, ':ptv2')
                 break
             elif r.status_code == 502:
@@ -145,7 +156,7 @@ def wait_webpage_ready(url: str, timeout: float = 30) -> None:
 def wait_webpage_ready_2(timeout: float = 30) -> None:
     import os
     from lk_utils import wait
-    with logger.timing():
+    with lk_logger.timing():
         for _ in wait(timeout, 0.2):
             if os.getenv('PYAPP_WINDOW_TARGET_READY'):
                 print('webpage ready', ':t')
