@@ -1,4 +1,8 @@
 
+### 2.1.1 (2024-11-13)
+
+- fix checking url
+
 ### 2.1.0 (2024-10-25)
 
 - faster checking url ready

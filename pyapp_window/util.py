@@ -9,9 +9,9 @@ import lk_logger
 import requests
 
 _has_proxy_set_before = 'HTTP_PROXY' in os.environ
-if not _has_proxy_set_before:
-    os.environ['HTTP_PROXY'] = 'http://127.0.0.1:7890'
-    os.environ['HTTPS_PROXY'] = 'http://127.0.0.1:7890'
+# if not _has_proxy_set_before:
+#     os.environ['HTTP_PROXY'] = 'http://127.0.0.1:7890'
+#     os.environ['HTTPS_PROXY'] = 'http://127.0.0.1:7890'
 
 
 class T:
@@ -129,19 +129,25 @@ def wait_webpage_ready(url: str, timeout: float = 30) -> None:
     start = time()
     with lk_logger.timing():
         while True:
-            if _has_proxy_set_before:
-                r = requests.head(url)
-            else:
-                r = requests.head(url, proxies={'http': None, 'https': None})
-            # r = requests.head(url, proxies={
-            #     'http': 'http://127.0.0.1:7890',
-            #     'https': 'http://127.0.0.1:7890',
-            # })
+            try:
+                if _has_proxy_set_before:
+                    r = requests.head(url)
+                else:
+                    r = requests.head(
+                        url, proxies={'http': None, 'https': None}
+                    )
+            except requests.exceptions.ConnectionError as e:
+                if 'WinError 10061' in str(e):
+                    print(
+                        'stop checking url since we encountered proxy error',
+                        ':ptv6'
+                    )
+                    break
             if (
                 200 <= r.status_code < 400 or
                 r.status_code in (400, 405, 500)
             ):
-                print('webpage ready', url, ':ptv2')
+                print('webpage ready', url, ':ptv4')
                 break
             elif r.status_code == 502:
                 sleep(0.5)
