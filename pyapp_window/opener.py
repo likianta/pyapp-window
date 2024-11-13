@@ -1,6 +1,7 @@
 import sys
 import typing as t
 
+from lk_utils import fs
 from lk_utils import run_cmd_args
 from lk_utils.subproc import Popen
 
@@ -59,7 +60,7 @@ def open_window(
     
     if blocking:
         select_backend(prefer=backend)(
-            icon=icon,
+            icon=fs.abspath(icon) if icon else None,
             fullscreen=fullscreen,
             pos=pos,
             size=size,
