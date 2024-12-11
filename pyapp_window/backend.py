@@ -29,6 +29,7 @@ class T:
     Backend = t.Literal[
         'chrome_appmode',
         'pywebview',
+        'terminal',
         'toga',
         'webbrowser',
         'webui2',
@@ -63,6 +64,7 @@ def select_backend(
     return {
         'chrome_appmode': open_with_chrome_appmode,
         'pywebview'     : open_with_pywebview,
+        'terminal'      : open_with_terminal,
         'toga'          : open_with_toga,
         'webbrowser'    : open_with_webbrowser,
         'webui2'        : open_with_webui2,
@@ -96,6 +98,58 @@ def open_with_pywebview(
         fullscreen=fullscreen,
     )
     webview.start()
+
+
+def open_with_terminal(
+    *,
+    fullscreen: bool = False,
+    maximized: bool = False,
+    pos: T.Position,
+    size: T.Size,
+    suppress_size_warning: bool = False,
+    **_
+) -> None:
+    """
+    open terminal app, the terminal app should be pre-installed.
+    for windows, we prefer to open wt.exe (windows terminal).
+    
+    params:
+        size: the `(width, height)` means `(cols, rows)`. suggested values are:
+            - `(80, 24)`: for small terminal.
+            - `(120, 40)`: for medium terminal.
+            - `(160, 60)`: for large terminal.
+    """
+    assert fullscreen == maximized == False or fullscreen != maximized  # noqa
+    if not suppress_size_warning:
+        assert size[0] <= 500 and size[1] <= 100, (
+            'the unit for terminal size is cols and rows, not pixels. '
+            'it seems you are giving too large values for `size` param. '
+            'if you are sure this is what you want, try again with setting '
+            '`suppress_size_warning=True`.'
+        )
+    
+    from lk_utils import run_cmd_args
+    
+    if sys.platform == 'win32':
+        if os.path.exists(
+            wt := '{}/Microsoft/WindowsApps/wt.exe'.format(
+                os.environ['LocalAppData']
+            )
+        ):
+            # https://learn.microsoft.com/en-us/windows/terminal/command-line
+            # -arguments?tabs=windows#options-and-commands
+            run_cmd_args(
+                wt,
+                '--pos', '{},{}'.format(*pos),
+                '--size', '{},{}'.format(*size),
+                (fullscreen and '--fullscreen' or ''),
+                (maximized and '--maximized' or ''),
+                verbose=True,  # TEST
+            )
+        else:
+            raise NotImplementedError
+    else:
+        raise NotImplementedError
 
 
 def open_with_toga(

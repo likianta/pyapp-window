@@ -5,25 +5,33 @@ from lk_utils import fs
 from lk_utils import run_cmd_args
 from lk_utils.subproc import Popen
 
+from .backend import T as T0
 from .backend import select_backend
+from .util import T as T1
 from .util import normalize_position
 from .util import normalize_size
 from .util import wait_webpage_ready
 
 
+class T:
+    Backend = T0.Backend
+    Position = T1.Position0
+    Size = T1.Size0
+
+
 def open_window(
-    title: str = 'Pyapp Window',
+    title: str = 'PyApp Window',
     url: str = None,
     icon: str = None,
     host: str = None,
     port: int = None,
-    pos: t.Union[t.Tuple[int, int], t.Literal['center']] = 'center',
-    size: t.Union[t.Tuple[int, int], t.Literal['fullscreen']] = (1200, 900),
+    pos: T.Position = 'center',
+    size: T.Size = (1200, 900),
     check_url: bool = False,
     splash_screen: str = None,
     blocking: bool = True,
     verbose: bool = False,
-    backend: str = None,
+    backend: T.Backend = None,
     close_window_to_exit: bool = True,
 ) -> t.Optional[Popen]:
     """
@@ -40,18 +48,35 @@ def open_window(
             if w or h exceeds the screen size, it will be adjusted.
     """
     # check params
-    if not url:
-        if not host:
-            host = 'localhost'
+    if not url and backend != 'terminal':
         assert port
-        url = 'http://{}:{}'.format(host, port)
+        url = 'http://{}:{}'.format(host or 'localhost', port)
     
-    if size == 'fullscreen':  # another way to set fullscreen
-        fullscreen = True
-        size = (1200, 900)
+    size_kw = {
+        'fullscreen': size == 'fullscreen',
+        'maximized' : size == 'maximized',
+        'size'      : None
+    }
+    if backend == 'terminal':
+        if isinstance(size, str):
+            size_kw['size'] = {
+                'fullscreen': (160, 60),
+                'maximized' : (160, 60),
+                'large'     : (160, 60),
+                'medium'    : (120, 40),
+                'small'     : (80, 24),
+            }
+        else:
+            assert (
+                isinstance(size, tuple) and
+                isinstance(size[0], int) and
+                isinstance(size[1], int)
+            )
+            size_kw['size'] = size
     else:
-        fullscreen = False
-        size = normalize_size(size)
+        size_kw['size'] = normalize_size(size)
+    assert size_kw['size']
+    
     pos = normalize_position(pos, size)
     print(pos, size, ':v')
     
@@ -61,12 +86,12 @@ def open_window(
     if blocking:
         select_backend(prefer=backend)(
             icon=fs.abspath(icon) if icon else None,
-            fullscreen=fullscreen,
             pos=pos,
             size=size,
             splash_screen=splash_screen,
             title=title,
             url=url,
+            **size_kw,
         )
         if close_window_to_exit:
             sys.exit()
@@ -75,8 +100,8 @@ def open_window(
             (sys.executable, '-m', 'pyapp_window'),
             ('--title', title),
             ('--url', url),
-            ('--pos', '{}:{}'.format(*pos)),
-            ('--size', 'fullscreen' if fullscreen else '{}:{}'.format(*size)),
+            ('--pos', '{},{}'.format(*pos)),
+            ('--size', size if isinstance(size, str) else '{}x{}'.format(*size)),
             ('--splash_screen', splash_screen),
             blocking=False,
             verbose=verbose,

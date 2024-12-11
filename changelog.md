@@ -1,4 +1,8 @@
 
+### 2.2.0 (wip)
+
+...
+
 ### 2.1.2 (2024-12-11)
 
 - optimize format of cli params `pos` and `size`

@@ -6,9 +6,6 @@ import typing as t
 from time import sleep
 from time import time
 
-import lk_logger
-import requests
-
 _has_proxy_set_before = 'HTTP_PROXY' in os.environ
 # if not _has_proxy_set_before:
 #     os.environ['HTTP_PROXY'] = 'http://127.0.0.1:7890'
@@ -20,7 +17,7 @@ class T:
     Position1 = t.Tuple[int, int]
     Size0 = t.Union[
         t.Tuple[t.Union[int, float], t.Union[int, float]],
-        t.Literal['fullscreen']
+        t.Literal['small', 'medium', 'large', 'maximized', 'fullscreen'],
     ]
     Size1 = t.Tuple[int, int]
 
@@ -87,7 +84,7 @@ def normalize_position(pos: T.Position0, size: T.Size1 = None) -> T.Position1:
         return (x if x >= 0 else 0), (y if y >= 0 else 0)
 
 
-def normalize_size(size: T.Size0) -> T.Size1:
+def normalize_size(size: T.Size0, account_scale_factor: bool = True) -> T.Size1:
     if isinstance(size, tuple):
         w, h = size
         
@@ -103,12 +100,15 @@ def normalize_size(size: T.Size0) -> T.Size1:
         assert w > 0 and h > 0
         
         # adapt to screen size
-        if sys.platform == 'win32':
-            # detect scale factor
-            import ctypes
-            factor = ctypes.windll.shcore.GetScaleFactorForDevice(0) / 100
-            #   e.g. 1.5, means 150%
-            w, h = round(w / factor), round(h / factor)
+        if account_scale_factor:
+            if sys.platform == 'win32':
+                # detect scale factor
+                import ctypes
+                factor = ctypes.windll.shcore.GetScaleFactorForDevice(0) / 100
+                #   e.g. 1.5, means 150%
+                w, h = round(w / factor), round(h / factor)
+            else:
+                pass  # TODO
         
         if w > w0:
             r = h / w
@@ -122,11 +122,24 @@ def normalize_size(size: T.Size0) -> T.Size1:
         
         return w, h
     else:
-        assert size == 'fullscreen', ('not supported type', size)
-        return get_screen_size()
+        if size == 'fullscreen':
+            return get_screen_size()
+        elif size == 'maximized':
+            w0, h0 = get_screen_size()
+            return round(w0 * 0.95), round(h0 * 0.95)
+        elif size == 'large':
+            return normalize_size((2400, 1500))
+        elif size == 'medium':
+            return normalize_size((1600, 900))
+        elif size == 'small':
+            return normalize_size((960, 640))
+        else:
+            raise Exception(size)
 
 
 def wait_webpage_ready(url: str, timeout: float = 30) -> None:
+    import lk_logger
+    import requests
     start = time()
     with lk_logger.timing():
         while True:
@@ -161,7 +174,7 @@ def wait_webpage_ready(url: str, timeout: float = 30) -> None:
 
 # TODO: not proven yet
 def wait_webpage_ready_2(timeout: float = 30) -> None:
-    import os
+    import lk_logger
     from lk_utils import wait
     with lk_logger.timing():
         for _ in wait(timeout, 0.2):
