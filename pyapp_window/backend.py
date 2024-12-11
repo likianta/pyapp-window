@@ -1,24 +1,24 @@
 """
 FIXME: issue list:
     toga:
-        - minimize then restore window, the size goes very small.
+        - cannot maximize/mimimize window at startup.
     webui2:
-        - too slow to detect window close event
+        - too slow to detect window close event.
             (https://github.com/webui-dev/python-webui/issues/21)
         - the launcher icon is in low resolution.
     wxpython:
-        ...
-    kivy:
         ...
     chrome_appmode:
         - when close the window, will popup a new window with blank page.
         - requires that user PC has chrome installed.
     pywebview:
         - cannot set launch icon and window icon.
-        - maybe crashed in older windows (caused by pythonnet, .NET etc.)
+        - may be crashed in older windows (caused by pythonnet, .NET etc.)
         - cannot show the window in macos when running in poetry venv.
     pyside6:
-        - too heavy.
+        - too heavy to use.
+    kivy:
+        ...
 """
 import os
 import sys
@@ -103,7 +103,9 @@ def open_with_toga(
     appid: str = 'dev.likianta.pyapp_window',
     fullscreen: bool = False,
     icon: str = None,
+    # maximized: bool = False,  # TODO
     pos: T.Position,
+    # size: t.Union[T.Size, t.Literal['fullscreen', 'maximized']],
     size: T.Size,
     splash_screen: str = None,
     title: str,
@@ -185,6 +187,8 @@ def open_with_toga(
             self.main_window = toga.MainWindow(
                 id='main', title=title, position=pos, size=size, content=view,
             )
+            # if maximized:
+            #     self.main_window.maximized = True
             if fullscreen:
                 self.main_window.full_screen = True
             self.main_window.show()

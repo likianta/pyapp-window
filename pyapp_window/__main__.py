@@ -1,3 +1,5 @@
+import re
+
 from argsense import cli
 
 from .opener import open_window
@@ -10,7 +12,7 @@ def launch(
     port: int = None,
     # secondary params
     host: str = None,
-    size: str = '1600:1200',
+    size: str = '1600x1200',
     title: str = 'Pyapp Window',
     pos: str = 'center',
     backend: str = None,
@@ -22,11 +24,11 @@ def launch(
         size (-s):
     """
     assert url or port, 'either `url` or `port` must be set.'
-    if ':' in pos:
-        x, y = map(int, pos.split(':'))
+    if ':' in pos or ',' in pos:
+        x, y = map(int, re.split(r'[:,]', pos))
         pos = (x, y)
-    if ':' in size:
-        w, h = map(int, size.split(':'))
+    if ':' in size or 'x' in size:
+        w, h = map(int, re.split(r'[:x]', size))
         size = (w, h)
     open_window(
         title,
@@ -43,4 +45,5 @@ def launch(
 
 if __name__ == '__main__':
     # pox -m pyapp_window -h
+    # pox -m pyapp_window -p 2030 -s 1300x1700
     cli.run(launch)

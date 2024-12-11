@@ -1,4 +1,8 @@
 
+### 2.1.2 (2024-12-11)
+
+- optimize format of cli params `pos` and `size`
+
 ### 2.1.1 (2024-11-13)
 
 - fix checking url

@@ -3,7 +3,8 @@ import re
 import subprocess as sp
 import sys
 import typing as t
-from time import sleep, time
+from time import sleep
+from time import time
 
 import lk_logger
 import requests
