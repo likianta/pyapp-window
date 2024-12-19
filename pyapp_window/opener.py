@@ -76,6 +76,7 @@ def open_window(
     else:
         size_kw['size'] = normalize_size(size)
     assert size_kw['size']
+    size = size_kw['size']
     
     pos = normalize_position(pos, size)
     print(pos, size, ':v')
@@ -87,7 +88,6 @@ def open_window(
         select_backend(prefer=backend)(
             icon=fs.abspath(icon) if icon else None,
             pos=pos,
-            size=size,
             splash_screen=splash_screen,
             title=title,
             url=url,
@@ -101,7 +101,11 @@ def open_window(
             ('--title', title),
             ('--url', url),
             ('--pos', '{},{}'.format(*pos)),
-            ('--size', size if isinstance(size, str) else '{}x{}'.format(*size)),
+            ('--size', (
+                'fullscreen' if size_kw['fullscreen'] else
+                'maximized' if size_kw['maximized'] else
+                '{}x{}'.format(*size_kw['size'])
+            )),
             ('--splash_screen', splash_screen),
             blocking=False,
             verbose=verbose,

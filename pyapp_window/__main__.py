@@ -13,13 +13,14 @@ def launch(
     # secondary params
     host: str = None,
     size: str = '1600x1200',
-    title: str = 'Pyapp Window',
+    title: str = 'PyApp Window',
     pos: str = 'center',
     backend: str = None,
 ) -> None:
     """
     kwargs:
-        port (-p): if `url` is not specified but `port` is set, it will open a -
+        port (-p):
+            if `url` is not specified but `port` is set, it will open a -
             localhost url.
         size (-s):
     """
