@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyapp-window"
-version = "2.2.0a3"
+version = "2.2.0a7"
 description = "Launching URL with native window in WebView mode."
 authors = ["likianta <likianta@foxmail.com>"]
 readme = "README.md"
@@ -9,34 +9,47 @@ packages = [{ include = "pyapp_window" }]
 [tool.poetry.dependencies]
 python = "^3.8"
 # argsense = "^0.5.8"
-argsense = { version = "^0.6.0b2", source = "likianta-host" }
+argsense = { version = "^0.6.3", source = "likianta-host" }
 lk-logger = "^6.0.3"
 # lk-utils = "^3.1.1"
 lk-utils = { version = "^3.1.2a5", source = "likianta-host" }
 # psutil = "*"
-requests = "^2.32.0"
-# toga = "^0.4.0"
-# toga = { version = "^0.4.0", platform = "!=linux" }
+# pythonnet = { version = "^3.0.5", platform = "win32", python = ">=3.12,<3.14" }  # <- toga
+requests = "^2.32.3"
+# toga = { version = "^0.4.8", platform = "!=linux" }
 # toga = [
 #     { version = "^0.4.0", platform = "darwin", python = ">=3.8,<3.13" },
 #     { version = "^0.4.0", platform = "win32", python = ">=3.8,<3.13" },
 # ]
+# toga = [
+#     { version = "^0.4.7", platform = "darwin", python = "<3.9" },
+#     { version = "^0.4.7", platform = "win32", python = "<3.9" },
+#     { version = "^0.4.8", platform = "darwin", python = ">=3.9,<3.13" },
+#     { version = "^0.4.8", platform = "win32", python = ">=3.9,<3.13" },
+#     # { version = "^0.4.8", platform = "win32", python = ">=3.13,<3.14" },
+# ]
 toga = [
-    { version = "^0.4.7", platform = "darwin", python = "<3.9" },
-    { version = "^0.4.7", platform = "win32", python = "<3.9" },
-    { version = "^0.4.8", platform = "darwin", python = ">=3.9,<3.13" },
-    { version = "^0.4.8", platform = "win32", python = ">=3.9,<3.13" },
+    { version = "<0.4.7", platform = "!=linux", python = ">=3.8,<3.9" },
+    { version = "^0.4.7", platform = "!=linux", python = ">=3.9,<3.14" },
 ]
-webui2 = [
-    { version = "^2.4.5", platform = "darwin" },
-    { version = "^2.4.5", platform = "linux" },
-]
+# webui2 = [
+#     { version = "^2.4.5", platform = "darwin" },
+#     { version = "^2.4.5", platform = "linux" },
+# ]
+webui2 = { version = "^2.4.5", platform = "!=win32" }
+
+# --- toga dependencies
+# pygobject = [
+#     { version = "<3.50.0", platform = "!=linux", python = "<3.9" },
+#     { version = "^3.50.0", platform = "!=linux", python = ">=3.9,<4.0" },
+# ]
+pythonnet = { version = "^3.0.5", platform = "win32", python = "<3.14" }
 
 [tool.poetry.group.dev.dependencies]
 pyinstrument = "^5.0.0"
-pywebview = { version = "^5.1", platform = "win32", python = ">=3.8,<3.13" }
+pywebview = { version = "^5.3.2", platform = "win32", python = ">=3.8,<3.13" }
 webui2 = "^2.4.5"  # https://github.com/webui-dev/python-webui
-wxpython = "^4.2.1"
+wxpython = "^4.2.2"
 
 [[tool.poetry.source]]
 name = "tsinghua"
