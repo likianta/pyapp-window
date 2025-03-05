@@ -4,7 +4,6 @@ FIXME: issue list:
         - cannot maximize/mimimize window at startup.
     webui2:
         - too slow to detect window close event.
-            (https://github.com/webui-dev/python-webui/issues/21)
         - the launcher icon is in low resolution.
     wxpython:
         ...
@@ -325,6 +324,7 @@ def open_with_webui2(
                 frameBorder="0"
             ></iframe>
         </body>
+        </html>
         '''.format(
             title=title,
             # https://stackoverflow.com/a/75832198
@@ -341,12 +341,13 @@ def open_with_webui2(
     win.set_position(pos[0], pos[1])
     win.set_size(size[0], size[1])
     
-    # print(win.get_parent_process_id(), win.get_child_process_id(), ':v')
-    # pid = win.get_child_process_id()
-    win.show(html)  # blocking
-    
-    # webui.wait()
-    # while win.is_shown() and webui.is_app_running():
+    print(':tv', 'start opening')
+    win.show(html)  # FIXME: very slow waiting for window close event.
+    # run_new_thread(win.show, (html,))
+    # sleep(3)
+    # while win.is_shown():
     #     sleep(1)
-    # print(win.get_parent_process_id(), win.get_child_process_id(), ':v')
-    # print('[red dim]webui window closed[/]', ':vr')
+    print(':tv', 'show over', win.is_shown())
+    
+    webui.wait()  # block until all opened windows are closed.
+    print('webui window closed', ':v7t')
