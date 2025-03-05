@@ -22,7 +22,16 @@ def launch(
         port (-p):
             if `url` is not specified but `port` is set, it will open a -
             localhost url.
+        pos:
+            - 'center': in the screen center.
+            - '<x>,<y>', e.g. '100,200'.
+                you can use negative values to indicate "right/bottom -
+                margin to the edge of screen".
+                if x/y values are larger than screen size, it will be auto -
+                transformed to 10px to the edge of screen.
+            - '<x>,center' or 'center,<y>', e.g. '100,center'.
         size (-s):
+            format: '<width>x<height>', e.g. '1600x1200'.
     """
     assert url or port, 'either `url` or `port` must be set.'
     if ':' in pos or ',' in pos:

@@ -13,7 +13,12 @@ _has_proxy_set_before = 'HTTP_PROXY' in os.environ
 
 
 class T:
-    Position0 = t.Union[t.Tuple[int, int], t.Literal['center']]
+    Position0 = t.Union[
+        t.Literal['center'],
+        t.Tuple[int, int],
+        t.Tuple[int, t.Literal['center']],
+        t.Tuple[t.Literal['center'], int],
+    ]
     Position1 = t.Tuple[int, int]
     Size0 = t.Union[
         t.Tuple[t.Union[int, float], t.Union[int, float]],
@@ -54,34 +59,40 @@ def get_screen_size() -> T.Size1:
 
 
 def normalize_position(pos: T.Position0, size: T.Size1 = None) -> T.Position1:
-    if isinstance(pos, tuple):
-        x, y = pos
-        
-        # resolve negative value
-        w0, h0 = get_screen_size()
-        if x < 0 or y < 0:
-            assert size
-            w1, h1 = size
-            if x < 0:
-                x = w0 - abs(x) - w1
-            if y < 0:
-                y = h0 - abs(y) - h1
-        assert x >= 0 and y >= 0
-        
-        # adapt to screen size
-        if x > w0:
-            x = w0 - 10
-        if y > h0:
-            y = h0 - 10
-        
-        return x, y
-    else:
-        assert pos == 'center'
-        assert size
-        w0, h0 = get_screen_size()
-        w1, h1 = size
+    w0, h0 = get_screen_size()
+    w1, h1 = size if size else (None, None)
+    
+    if pos == 'center':
         x, y = (w0 - w1) // 2, (h0 - h1) // 2
         return (x if x >= 0 else 0), (y if y >= 0 else 0)
+    
+    if isinstance(pos, str):
+        x, y = pos.split(',')
+    else:
+        x, y = pos
+    if x == 'center':
+        x = (w0 - w1) // 2
+    else:
+        x = int(x)
+    if y == 'center':
+        y = (h0 - h1) // 2
+    else:
+        y = int(y)
+    # assert isinstance(x, int) and isinstance(y, int)
+    
+    # adapt to screen size
+    if x < 0 or y < 0:
+        if x < 0:
+            x = w0 - abs(x) - w1
+        if y < 0:
+            y = h0 - abs(y) - h1
+    if x > w0:
+        x = w0 - 10
+    if y > h0:
+        y = h0 - 10
+    
+    assert x >= 0 and y >= 0
+    return x, y
 
 
 def normalize_size(size: T.Size0, account_scale_factor: bool = True) -> T.Size1:

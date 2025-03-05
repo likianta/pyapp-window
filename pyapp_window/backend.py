@@ -272,17 +272,6 @@ def open_with_webbrowser(
     webbrowser.open_new_tab(url)
 
 
-# def open_with_wxpython(
-#     *,
-#     pos: T.Position,
-#     size: T.Size,
-#     title: str,
-#     url: str,
-#     **_
-# ):
-#     raise NotImplementedError
-
-
 def open_with_webui2(
     *,
     icon: str = None,
@@ -351,3 +340,14 @@ def open_with_webui2(
     
     webui.wait()  # block until all opened windows are closed.
     print('webui window closed', ':v7t')
+
+
+# def open_with_wxpython(
+#     *,
+#     pos: T.Position,
+#     size: T.Size,
+#     title: str,
+#     url: str,
+#     **_
+# ):
+#     raise NotImplementedError
