@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyapp-window"
-version = "2.2.0a13"
+version = "2.2.0b2"
 description = "Launching URL with native window in WebView mode."
 authors = ["Likianta <likianta@foxmail.com>"]
 readme = "README.md"
