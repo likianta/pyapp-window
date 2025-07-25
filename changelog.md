@@ -1,7 +1,8 @@
 
-### 2.2.0 (wip)
+### 2.1.3 (2025-07-25)
 
-- add "terminal" window
+- tweak entrance arguments
+- add "terminal" window (experimental)
 
 ### 2.1.2 (2024-12-11)
 
