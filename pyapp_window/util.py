@@ -28,19 +28,7 @@ class T:
 
 
 def get_screen_size() -> T.Size1:
-    def via_tkinter() -> T.Size1:
-        # notice: on windows, the size is taking account of the scale factor!
-        # i.e. if your screen resolution is 3456x2160, and the scale factor is
-        # 150%, the return value will be (2304, 1440) instead of (3456, 2160).
-        # see also `normalize_size : if sys.platform == 'win32'`.
-        import tkinter
-        root = tkinter.Tk()
-        width = root.winfo_screenwidth()
-        height = root.winfo_screenheight()
-        root.destroy()
-        return width, height - 80  # -80: strip the height of the taskbar
-    
-    def via_system_api() -> T.Size1:  # macos only
+    if sys.platform == 'darwin':
         r = sp.run(
             'echo $(system_profiler SPDisplaysDataType)',
             text=True, shell=True, stdout=sp.PIPE
@@ -49,13 +37,24 @@ def get_screen_size() -> T.Size1:
         w, h = map(int, m.groups())
         # print(ret, (w, h), ':v')
         return w, h - 80
+    elif sys.platform == 'win32':
+        # https://stackoverflow.com/a/3129524/9695911
+        import ctypes
+        user32 = ctypes.windll.user32
+        width = user32.GetSystemMetrics(0)
+        height = user32.GetSystemMetrics(1)
+        return width, height - 80
     
-    if sys.platform == 'darwin':
-        try:
-            return via_system_api()
-        except Exception:
-            pass
-    return via_tkinter()
+    # notice: on windows, the size is taking account of the scale factor!
+    # i.e. if your screen resolution is 3456x2160, and the scale factor is
+    # 150%, the return value will be (2304, 1440) instead of (3456, 2160).
+    # see also `normalize_size : if sys.platform == 'win32'`.
+    import tkinter
+    root = tkinter.Tk()
+    width = root.winfo_screenwidth()
+    height = root.winfo_screenheight()
+    root.destroy()
+    return width, height - 80  # -80: strip the height of the taskbar
 
 
 def normalize_position(pos: T.Position0, size: T.Size1 = None) -> T.Position1:
@@ -159,7 +158,7 @@ def wait_webpage_ready(url: str, timeout: float = 30) -> None:
                     r = requests.head(url)
                 else:
                     r = requests.head(
-                        url, proxies={'http': None, 'https': None}
+                        url, proxies={'http': None, 'https': None}  # noqa
                     )
             except requests.exceptions.ConnectionError as e:
                 if 'WinError 10061' in str(e):
