@@ -1,6 +1,6 @@
 [project]
 name = "pyapp-window"
-version = "2.1.4a1"
+version = "2.1.4"
 description = "Launching URL with native window in WebView mode."
 license = "MIT"
 authors = [{ name = "Likianta", email = "likianta@foxmail.com" }]
@@ -14,11 +14,9 @@ homepage = "https://github.com/likianta/depsland"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-argsense = "^1.0.1"
+argsense = "^1.1.0"
 lk-logger = "^6.0.6"
-lk-utils = "^3.2.1"
-# psutil = "*"
-# pythonnet = { version = "^3.0.5", platform = "win32", python = ">=3.12,<3.14" }  # <- toga
+lk-utils = "^3.3.0"
 requests = "^2.32.3"
 toga = [
     { version = "^0.4.7", platform = "!=linux", python = ">=3.9,<3.14" },
@@ -47,7 +45,8 @@ wxpython = "^4.2.2"
 
 [[tool.poetry.source]]
 name = "tsinghua"
-url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
+# url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
+url = "http://mirrors.aliyun.com/pypi/simple/"
 priority = "primary"
 
 [[tool.poetry.source]]

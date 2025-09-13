@@ -1,7 +1,7 @@
 """
 FIXME: issue list:
     toga:
-        - cannot maximize/mimimize window at startup.
+        - cannot maximize/minimize window at startup.
     webui2:
         - too slow to detect window close event.
         - the launcher icon is in low resolution.
@@ -166,9 +166,37 @@ def open_with_toga(
     **_
 ) -> None:
     import toga
-    from lk_utils import new_thread
+    from lk_utils import fs, new_thread
     from toga.style.pack import CENTER, COLUMN, Pack
     from .util import wait_webpage_ready
+    
+    def unblock_dlls(pkg_dir: str) -> None:
+        """
+        if user extracted site-packages from a ".zip" file which was -
+        downloaded from the internet, the `<site-packages>/pythonnet/*.dll` -
+        are in "locked" status. we need to unlock them first.
+        
+        ref:
+            https://stackoverflow.com/questions/20886450/unblock-a-file-in
+            -windows-from-a-python-script
+            https://stackoverflow.com/questions/76214672/failed-to
+            -initialize-python-runtime-dll
+        """
+        for f in fs.findall_files(pkg_dir, '.dll'):
+            zid = os.path.abspath(f.path) + ':Zone.Identifier'
+            if os.path.isfile(zid):  # check if blocked
+                print(':v5', 'unblock dll', f.relpath)
+                try:
+                    os.remove(zid)  # unblock then
+                except WindowsError:
+                    # FIXME: some computers may raise [WinError 2] the -
+                    #   system cannot find the file specified.
+                    pass
+    
+    if os.name == 'nt':
+        site_packages_dir = fs.parent(toga.__path__[0])
+        unblock_dlls(f'{site_packages_dir}/pythonnet')
+        unblock_dlls(f'{site_packages_dir}/toga_winforms')
     
     class MyApp(toga.App):
         _progress_bar: t.Optional[toga.ProgressBar]

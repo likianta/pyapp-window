@@ -1,4 +1,9 @@
 
+### 2.1.4 (2025-09-16)
+
+- make util module works without tkinter (for embeddable python)
+- fix possible blocked dlls in opening window on windows system
+
 ### 2.1.3 (2025-07-25)
 
 - tweak entrance arguments
