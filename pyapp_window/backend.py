@@ -265,7 +265,7 @@ def open_with_toga(
             else:
                 view = toga.WebView(url=url)
                 self._progress_bar = None
-            self.main_window = toga.MainWindow(
+            self.main_window = MainWindow(
                 id='main', title=title, position=pos, size=size, content=view,
             )
             # if maximized:
@@ -286,6 +286,18 @@ def open_with_toga(
                 self.main_window.content = toga.WebView(url=url)
             
             self.loop.call_soon_threadsafe(_replace_view)  # noqa
+    
+    class MainWindow(toga.MainWindow):
+        # workaround to suppress warning from
+        # `$site-packages/toga_winforms/window.py : line 652 and line 137`
+        _on_gain_focus = lambda self: True
+        
+        # def __init__(self, *args, **kwargs):
+        #     super().__init__(*args, **kwargs)
+        #     # workaround to suppress warning from
+        #     # `$site-packages/toga_winforms/window.py : line 652 and line 137`
+        #     if not hasattr(self, '_on_gain_focus'):
+        #         self._on_gain_focus = lambda self: True
     
     app = MyApp()
     app.main_loop()
@@ -322,7 +334,7 @@ def open_with_webui2(
     else:
         icon = xpath('./favicon.svg')
     
-    win = webui.window()
+    win = webui.Window()
     html = dedent(
         '''
         <html>

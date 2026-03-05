@@ -1,6 +1,6 @@
 [project]
 name = "pyapp-window"
-version = "2.1.4"
+version = "2.1.5a6"
 description = "Launching URL with native window in WebView mode."
 license = "MIT"
 authors = [{ name = "Likianta", email = "likianta@foxmail.com" }]
@@ -10,23 +10,20 @@ requires-python = ">=3.8"
 dynamic = ["dependencies"]
 
 [project.urls]
-homepage = "https://github.com/likianta/depsland"
+homepage = "https://github.com/likianta/pyapp-window"
 
 [tool.poetry.dependencies]
 python = "^3.8"
 argsense = "^1.1.0"
-lk-logger = "^6.0.6"
-lk-utils = "^3.3.0"
+lk-logger = "^6.0.7"
+lk-utils = "^3.4.3"
 requests = "^2.32.3"
 toga = [
-    { version = "^0.4.7", platform = "!=linux", python = ">=3.9,<3.14" },
+    { version = "^0.5.3", platform = "!=linux", python = ">=3.10,<3.15" },
+    { version = ">=0.5.0,<0.5.3", platform = "!=linux", python = ">=3.9,<3.10" },
     { version = "<0.4.7", platform = "!=linux", python = ">=3.8,<3.9" },
 ]
-# webui2 = [
-#     { version = "^2.4.5", platform = "darwin" },
-#     { version = "^2.4.5", platform = "linux" },
-# ]
-webui2 = { version = "^2.5.4", platform = "!=win32" }
+webui2 = { version = "^2.5.7", platform = "!=win32" }
 
 # --- toga dependencies
 cffi = { version = "^1.17.1", platform = "win32" }  # <- pythonnet
@@ -34,24 +31,42 @@ cffi = { version = "^1.17.1", platform = "win32" }  # <- pythonnet
 #     { version = "<3.50.0", platform = "!=linux", python = "<3.9" },
 #     { version = "^3.50.0", platform = "!=linux", python = ">=3.9,<4.0" },
 # ]
-pythonnet = { version = "^3.0.5", platform = "win32", python = "<3.14" }
+pythonnet = [
+    { version = "^3.1.0rc0", platform = "win32", python = ">=3.14,<3.15" },
+    { version = "^3.0.5", platform = "win32", python = ">=3.8,<3.14" },
+]
+toga-core = [
+    { version = "^0.5.3", platform = "win32", python = ">=3.10,<3.15" },
+    { version = ">=0.5.0,<0.5.3", platform = "win32", python = ">=3.9,<3.10" },
+    { version = ">=0.4.6,<0.5.0", platform = "win32", python = ">=3.8,<3.9" },
+]
+toga-winforms = [
+    { version = "^0.5.3", platform = "win32", python = ">=3.10,<3.15" },
+    { version = ">=0.5.0,<0.5.3", platform = "win32", python = ">=3.9,<3.10" },
+    { version = ">=0.4.6,<0.5.0", platform = "win32", python = ">=3.8,<3.9" },
+]
 
 [tool.poetry.group.dev.dependencies]
+lk-utils = { version = "^3.5.0a14", source = "likianta" }
 pyinstrument = "^5.0.0"
 # pywebview = { version = "^5.3.2", platform = "win32", python = ">=3.8,<3.13" }
-pywebview = "^5.3.2"
-webui2 = "^2.5.4"  # https://github.com/webui-dev/python-webui
-wxpython = "^4.2.2"
+pywebview = "^6.1.0"
+webui2 = "^2.5.7"  # https://github.com/webui-dev/python-webui
+wxpython = { version = "^4.2.5", python = ">=3.10,<3.15" }
 
 [[tool.poetry.source]]
-name = "tsinghua"
-# url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
-url = "http://mirrors.aliyun.com/pypi/simple/"
+name = "aliyun"
+url = "https://mirrors.aliyun.com/pypi/simple/"
 priority = "primary"
+
+# [[tool.poetry.source]]
+# name = "tsinghua"
+# url = "https://mirrors.aliyun.com/pypi/simple/"
+# priority = "primary"
 
 [[tool.poetry.source]]
 name = "likianta"
-url = "http://localhost:2131/"
+url = "http://localhost:2191/"
 priority = "supplemental"
 
 [build-system]
