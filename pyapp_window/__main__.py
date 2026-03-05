@@ -5,7 +5,7 @@ from argsense import cli
 from .opener import open_window
 
 
-@cli.cmd()
+@cli
 def launch(
     # primary params
     url: str = None,

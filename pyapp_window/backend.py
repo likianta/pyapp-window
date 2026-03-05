@@ -19,7 +19,6 @@ FIXME: issue list:
     kivy:
         ...
 """
-import os
 import sys
 import typing as t
 
@@ -37,9 +36,7 @@ class T:
     Size = t.Tuple[int, int]
 
 
-def select_backend(
-    prefer: t.Optional[T.Backend] = os.getenv('PYAPP_WINDOW_BACKEND', None)
-) -> t.Callable:
+def select_backend(prefer: t.Optional[T.Backend] = None) -> t.Callable:
     if prefer:
         backend = prefer
     else:
@@ -127,6 +124,7 @@ def open_with_terminal(
             '`suppress_size_warning=True`.'
         )
     
+    import os
     from lk_utils import run_cmd_args
     
     if sys.platform == 'win32':
@@ -165,6 +163,7 @@ def open_with_toga(
     url: str,
     **_
 ) -> None:
+    import os
     import toga
     from lk_utils import fs, new_thread
     from toga.style.pack import CENTER, COLUMN, Pack
@@ -288,6 +287,8 @@ def open_with_toga(
             self.loop.call_soon_threadsafe(_replace_view)  # noqa
     
     class MainWindow(toga.MainWindow):
+        # pass
+        
         # workaround to suppress warning from
         # `$site-packages/toga_winforms/window.py : line 652 and line 137`
         _on_gain_focus = lambda self: True
@@ -325,8 +326,8 @@ def open_with_webui2(
     pros: webui2 is small and lightning fast.
     https://github.com/webui-dev/python-webui
     """
+    from lk_utils import dedent
     from lk_utils import xpath
-    from textwrap import dedent
     from webui import webui
     
     if icon:

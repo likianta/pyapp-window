@@ -1,4 +1,8 @@
 
+### 2.1.5 (2026-03-05)
+
+- minor fixes
+
 ### 2.1.4 (2025-09-16)
 
 - make util module works without tkinter (for embeddable python)
