@@ -22,7 +22,7 @@ class T:
     Position1 = t.Tuple[int, int]
     Size0 = t.Union[
         t.Tuple[t.Union[int, float], t.Union[int, float]],
-        t.Literal['small', 'medium', 'large', 'maximized', 'fullscreen'],
+        t.Literal['fullscreen', 'landscape', 'maximized', 'portrait'],
     ]
     Size1 = t.Tuple[int, int]
 
@@ -137,12 +137,10 @@ def normalize_size(size: T.Size0, account_scale_factor: bool = True) -> T.Size1:
         elif size == 'maximized':
             w0, h0 = get_screen_size()
             return round(w0 * 0.95), round(h0 * 0.95)
-        elif size == 'large':
-            return normalize_size((2400, 1500))
-        elif size == 'medium':
-            return normalize_size((1600, 900))
-        elif size == 'small':
-            return normalize_size((960, 640))
+        elif size == 'landscape':
+            return normalize_size((1200, 900))
+        elif size == 'portrait':
+            return normalize_size((640, 960))
         else:
             raise Exception(size)
 

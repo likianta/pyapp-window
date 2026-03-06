@@ -47,12 +47,12 @@ toga-winforms = [
 ]
 
 [tool.poetry.group.dev.dependencies]
-lk-utils = { version = "^3.5.0a14", source = "likianta" }
-pyinstrument = "^5.0.0"
+lk-utils = { version = "^3.5.0a18", source = "likianta" }
+# pyinstrument = "^5.0.0"
 # pywebview = { version = "^5.3.2", platform = "win32", python = ">=3.8,<3.13" }
 pywebview = "^6.1.0"
 webui2 = "^2.5.7"  # https://github.com/webui-dev/python-webui
-wxpython = { version = "^4.2.5", python = ">=3.10,<3.15" }
+# wxpython = { version = "^4.2.5", python = ">=3.10,<3.15" }
 
 [[tool.poetry.source]]
 name = "aliyun"

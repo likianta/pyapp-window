@@ -15,7 +15,7 @@ def launch(
     host: str = None,
     icon: str = None,
     pos: str = 'center',
-    size: str = '1600x1200',
+    size: str = 'landscape',
     title: str = 'PyApp Window',
 ) -> None:
     """
@@ -26,7 +26,7 @@ def launch(
             if `url` is not specified but `port` is set, it will open a -
             localhost url.
         pos:
-            - "center": in the screen center.
+            - "center" (default): in the screen center.
             - `<x>,<y>`, e.g. "100,200".
                 you can use negative values to indicate "right/bottom -
                 margin to the edge of screen".
@@ -34,7 +34,14 @@ def launch(
                 transformed to 10px to the edge of screen.
             - `<x>,center` or `center,<y>`, e.g. "100,center".
         size (-s):
-            format: `<width>x<height>`, e.g. "1600x1200".
+            there are three supported formats:
+                - `<width>x<height>`, e.g. "800x600"
+                - `<width>:<height>`, e.g. "800:600"
+                - one of the preset names:
+                    "fullscreen": full screen size.
+                    "maximized": maximize screen size.
+                    "landscape": landscape size.
+                    "portrait": portrait size.
         icon (-i): if given, must be ".ico" type.
     """
     assert url or port, 'either `url` or `port` must be set.'
@@ -44,6 +51,8 @@ def launch(
     if ':' in size or 'x' in size:
         w, h = map(int, re.split(r'[:x]', size))
         size = (w, h)
+    else:
+        assert size in ('fullscreen', 'maximized', 'landscape', 'portrait')
     open_window(
         title,
         url,
