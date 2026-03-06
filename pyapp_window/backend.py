@@ -3,8 +3,8 @@ FIXME: issue list:
     toga:
         - cannot maximize/minimize window at startup.
     webui2:
-        - too slow to detect window close event.
-        - the launcher icon is in low resolution.
+        - sometimes not show favicon in window.
+        - sometimes appear two windows (one the target, another one is broken).
     wxpython:
         ...
     chrome_appmode:
@@ -47,7 +47,7 @@ def select_backend(prefer: t.Optional[T.Backend] = None) -> t.Callable:
             except ImportError:
                 backend = 'webbrowser'
         elif sys.platform == 'win32':
-            backend = 'toga'
+            backend = 'webui2'
         else:
             try:
                 import toga
@@ -315,7 +315,7 @@ def open_with_webbrowser(
 
 def open_with_webui2(
     *,
-    icon: str = None,
+    icon: str = None,  # given a file path. supports ico, png, svg.
     pos: T.Position,
     size: T.Size,
     title: str,
@@ -323,19 +323,50 @@ def open_with_webui2(
     **_
 ) -> None:
     """
-    pros: webui2 is small and lightning fast.
     https://github.com/webui-dev/python-webui
+    pros: webui2 is light and fast.
     """
+    from base64 import b64encode
     from lk_utils import dedent
     from lk_utils import xpath
-    from webui import webui
+    from webui import webui  # pip install webui2
     
     if icon:
-        assert icon.endswith('.svg')
+        assert icon.endswith(('.ico', '.png', '.svg'))
+        icon_file = icon
+        icon_type = (
+            'image/x-icon' if icon.endswith('.ico') else
+            'image/png' if icon.endswith('.png') else
+            'image/svg+xml'  # if icon.endswith('.svg')
+        )
     else:
-        icon = xpath('./favicon.svg')
+        icon_file = xpath('./favicon.svg')
+        icon_type = 'image/svg+xml'
+    del icon
     
-    win = webui.Window()
+    if icon_file.endswith('.svg'):
+        with open(icon_file, 'r') as f:
+            icon_data = (
+                f.read()
+                .replace('\n', ' ')
+                .replace('"', "%22")
+                .replace('#', '%23')
+            )
+            assert icon_data.startswith('<svg')
+    else:
+        with open(icon_file, 'rb') as f:
+            icon_data = b64encode(f.read()).decode('utf-8')
+    
+    win = webui.Window(window_id=None)
+    # print(win.get_window_id, ':v')
+    win.set_icon(
+        icon_data if icon_file.endswith('.svg') else
+        '<img src="data:{};base64,{}">'.format(icon_type, icon_data),
+        icon_type
+    )
+    win.set_position(pos[0], pos[1])
+    win.set_size(size[0], size[1])
+    
     html = dedent(
         '''
         <html>
@@ -343,8 +374,10 @@ def open_with_webui2(
             <title>{title}</title>
             <link
                 rel="icon"
-                type="image/svg+xml"
-                href="data:image/svg+xml,{svg}" />
+                type="{favicon_type}"
+                href="{favicon_data}"
+            >
+            <script src="webui.js"></script>
         </head>
         <body>
             <iframe
@@ -357,28 +390,25 @@ def open_with_webui2(
         </html>
         '''.format(
             title=title,
-            # https://stackoverflow.com/a/75832198
-            svg=(
-                open(icon, 'r').read()
-                .replace('\n', ' ')
-                .replace('"', "%22")
-                .replace('#', '%23')
+            # how to set favicon in html:
+            #   https://chatgpt.com/share/69aa57bc-ce24-800a-b71a-49843d849d70
+            #   https://stackoverflow.com/a/75832198
+            favicon_type=icon_type,
+            favicon_data=(
+                'data:{},{}'.format(icon_type, icon_data)
+                if icon_file.endswith('.svg') else
+                'data:{};base64,{}'.format(icon_type, icon_data)
             ),
             target_url=url,
         )
     )
-    # print(html, ':v')
-    win.set_position(pos[0], pos[1])
-    win.set_size(size[0], size[1])
-    
-    print(':tv', 'start opening')
-    win.show(html)  # FIXME: very slow waiting for window close event.
-    # run_new_thread(win.show, (html,))
-    # sleep(3)
-    # while win.is_shown():
-    #     sleep(1)
-    print(':tv', 'show over', win.is_shown())
-    
+    # from lk_utils import dump
+    # dump(
+    #     html.replace('<script src="webui.js"></script>', '', 1),
+    #     'test/example_page.html'
+    # )
+    # print(':tv', 'opening window')
+    win.show(html)
     webui.wait()  # block until all opened windows are closed.
     print('webui window closed', ':v7t')
 

@@ -1,6 +1,6 @@
 [project]
 name = "pyapp-window"
-version = "2.2.0b5"
+version = "2.2.0"
 description = "Launching URL with native window in WebView mode."
 license = "MIT"
 authors = [{ name = "Likianta", email = "likianta@foxmail.com" }]
@@ -17,41 +17,46 @@ python = "^3.8"
 argsense = "^1.1.0"
 lk-logger = "^6.0.7"
 lk-utils = "^3.4.3"
-requests = "^2.32.3"
-toga = [
-    { version = "^0.5.3", platform = "!=linux", python = ">=3.10,<3.15" },
-    { version = ">=0.5.0,<0.5.3", platform = "!=linux", python = ">=3.9,<3.10" },
-    { version = "<0.4.7", platform = "!=linux", python = ">=3.8,<3.9" },
+requests = [
+    { version = "^2.32.5", python = "^3.9" },
+    { version = "^2.32.4", python = ">=3.8,<3.9" },
 ]
-webui2 = { version = "^2.5.7", platform = "!=win32" }
+# toga = [
+#     { version = "^0.5.3", platform = "!=linux", python = ">=3.10,<3.15" },
+#     { version = ">=0.5.0,<0.5.3", platform = "!=linux", python = ">=3.9,<3.10" },
+#     { version = "<0.4.7", platform = "!=linux", python = ">=3.8,<3.9" },
+# ]
+# webui2 = { version = "^2.5.7", platform = "!=win32" }
+webui2 = "^2.5.7"  # https://github.com/webui-dev/python-webui
 
 # --- toga dependencies
-cffi = { version = "^1.17.1", platform = "win32" }  # <- pythonnet
+# cffi = { version = "^1.17.1", platform = "win32" }  # <- pythonnet
 # pygobject = [
 #     { version = "<3.50.0", platform = "!=linux", python = "<3.9" },
 #     { version = "^3.50.0", platform = "!=linux", python = ">=3.9,<4.0" },
 # ]
-pythonnet = [
-    { version = "^3.1.0rc0", platform = "win32", python = ">=3.14,<3.15" },
-    { version = "^3.0.5", platform = "win32", python = ">=3.8,<3.14" },
-]
-toga-core = [
-    { version = "^0.5.3", platform = "win32", python = ">=3.10,<3.15" },
-    { version = ">=0.5.0,<0.5.3", platform = "win32", python = ">=3.9,<3.10" },
-    { version = ">=0.4.6,<0.5.0", platform = "win32", python = ">=3.8,<3.9" },
-]
-toga-winforms = [
-    { version = "^0.5.3", platform = "win32", python = ">=3.10,<3.15" },
-    { version = ">=0.5.0,<0.5.3", platform = "win32", python = ">=3.9,<3.10" },
-    { version = ">=0.4.6,<0.5.0", platform = "win32", python = ">=3.8,<3.9" },
-]
+# pythonnet = [
+#     { version = "^3.1.0rc0", platform = "win32", python = ">=3.14,<3.15" },
+#     { version = "^3.0.5", platform = "win32", python = ">=3.8,<3.14" },
+# ]
+# toga-core = [
+#     { version = "^0.5.3", platform = "win32", python = ">=3.10,<3.15" },
+#     { version = ">=0.5.0,<0.5.3", platform = "win32", python = ">=3.9,<3.10" },
+#     { version = ">=0.4.6,<0.5.0", platform = "win32", python = ">=3.8,<3.9" },
+# ]
+# toga-winforms = [
+#     { version = "^0.5.3", platform = "win32", python = ">=3.10,<3.15" },
+#     { version = ">=0.5.0,<0.5.3", platform = "win32", python = ">=3.9,<3.10" },
+#     { version = ">=0.4.6,<0.5.0", platform = "win32", python = ">=3.8,<3.9" },
+# ]
 
 [tool.poetry.group.dev.dependencies]
 lk-utils = { version = "^3.5.0a18", source = "likianta" }
 # pyinstrument = "^5.0.0"
 # pywebview = { version = "^5.3.2", platform = "win32", python = ">=3.8,<3.13" }
 pywebview = "^6.1.0"
-webui2 = "^2.5.7"  # https://github.com/webui-dev/python-webui
+toga = { version = "^0.5.3", python = ">=3.12,<3.15" }
+# webui2 = "^2.5.7"
 # wxpython = { version = "^4.2.5", python = ">=3.10,<3.15" }
 
 [[tool.poetry.source]]

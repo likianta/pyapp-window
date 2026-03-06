@@ -1,7 +1,7 @@
 
-### 2.2.0 (wip)
+### 2.2.0 (2026-03-06)
 
-- use self-made webview shell (compiled by vlang) to replace toga and toga-winforms
+- set webui2 as default backend.
 
 ### 2.1.4 (2025-09-16)
 
