@@ -1,4 +1,8 @@
 
+### 2.2.1 (wip)
+
+- fix multi-client access denied (duplicate window problem).
+
 ### 2.2.0 (2026-03-06)
 
 - set webui2 as default backend.

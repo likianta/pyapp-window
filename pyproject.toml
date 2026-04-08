@@ -1,6 +1,6 @@
 [project]
 name = "pyapp-window"
-version = "2.2.0"
+version = "2.2.1a5"
 description = "Launching URL with native window in WebView mode."
 license = "MIT"
 authors = [{ name = "Likianta", email = "likianta@foxmail.com" }]

@@ -257,7 +257,7 @@ def open_with_toga(
                     )
                 )
                 self._progress_bar = bar
-                self._progress_bar.start()
+                self._progress_bar.start()  # noqa
                 # TEST: if you want to test only splash screen, comment below
                 #   line.
                 self._wait_webpage_ready(url)
@@ -271,7 +271,7 @@ def open_with_toga(
             #     self.main_window.maximized = True
             if fullscreen:
                 self.main_window.full_screen = True
-            self.main_window.show()
+            self.main_window.show()  # noqa
         
         @new_thread()
         def _wait_webpage_ready(self, url: str, timeout: float = 30) -> None:
@@ -281,7 +281,7 @@ def open_with_toga(
             # pre-set `self.loop` for this purpose.
             # https://stackoverflow.com/a/77350586/9695911
             def _replace_view() -> None:
-                self._progress_bar.stop()
+                self._progress_bar.stop()  # noqa
                 self.main_window.content = toga.WebView(url=url)
             
             self.loop.call_soon_threadsafe(_replace_view)  # noqa
@@ -407,8 +407,18 @@ def open_with_webui2(
     #     html.replace('<script src="webui.js"></script>', '', 1),
     #     'test/example_page.html'
     # )
+    
+    # webui.set_config(webui.Config.multi_client, True)
+    webui.set_config(webui.Config.multi_client, False)
+    
     # print(':tv', 'opening window')
-    win.show(html)
+    # win.show(html)
+    # win.show(url)
+    if sys.platform == 'darwin':
+        # https://webui.me/docs.html#/?id=show_browser (<- see the second tip)
+        win.show_wv(html)
+    else:
+        win.show_browser(html, win.get_best_browser())
     webui.wait()  # block until all opened windows are closed.
     print('webui window closed', ':v7t')
 
