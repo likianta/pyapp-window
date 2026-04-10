@@ -14,9 +14,15 @@ from .util import wait_webpage_ready
 
 
 class T:
+    AnyPos = T1.Position0
+    AnySize = T1.Size0
     Backend = T0.Backend
-    Position = T1.Position0
-    Size = T1.Size0
+    Geometry = t.TypedDict('Geometry', {
+        'pos': t.Tuple[int, int],
+        'size': t.Tuple[int, int],
+        'maximized': bool,
+        'fullscreen': bool,
+    })
 
 
 def open_window(
@@ -25,8 +31,8 @@ def open_window(
     icon: str = None,
     host: str = None,
     port: int = None,
-    pos: T.Position = 'center',
-    size: T.Size = (1200, 900),
+    pos: T.AnyPos = 'center',
+    size: T.AnySize = (1200, 900),
     check_url: bool = False,
     splash_screen: str = None,
     blocking: bool = True,
@@ -52,61 +58,61 @@ def open_window(
         assert port
         url = 'http://{}:{}'.format(host or 'localhost', port)
     
-    size_kw = {
+    geometry: T.Geometry = {
+        'pos': (0, 0),
+        'size': (0, 0),
+        'maximized': size == 'maximized',
         'fullscreen': size == 'fullscreen',
-        'maximized' : size == 'maximized',
-        'size'      : None
     }
     if backend == 'terminal':
         if isinstance(size, str):
-            size_kw['size'] = {
+            geometry['size'] = {
                 'fullscreen': (160, 60),
                 'maximized' : (160, 60),
                 'large'     : (160, 60),
                 'medium'    : (120, 40),
                 'small'     : (80, 24),
-            }
+            }[size]
         else:
             assert (
                 isinstance(size, tuple) and
                 isinstance(size[0], int) and
                 isinstance(size[1], int)
             )
-            size_kw['size'] = size
+            geometry['size'] = size  # type: ignore
     else:
-        size_kw['size'] = normalize_size(size)
-    assert size_kw['size']
-    size = size_kw['size']
-    
-    pos = normalize_position(pos, size)
-    print(pos, size, ':v')
+        geometry['size'] = normalize_size(size)
+    assert geometry['size']
+    geometry['pos'] = normalize_position(pos, geometry['size'])
+    del pos, size
+    print('finalize window geometry', geometry['pos'], geometry['size'])
     
     if check_url and not splash_screen:
+        assert url
         wait_webpage_ready(url)
     
     if blocking:
         select_backend(prefer=backend)(
             icon=fs.abspath(icon) if icon else None,
-            pos=pos,
             splash_screen=splash_screen,
             title=title,
             url=url,
-            **size_kw,
+            **geometry,
         )
         if close_window_to_exit:
             sys.exit()
     else:
-        return run_cmd_args(
+        return t.cast(t.Optional[Popen], run_cmd_args(
             (sys.executable, '-m', 'pyapp_window'),
             ('--title', title),
             ('--url', url),
-            ('--pos', '{},{}'.format(*pos)),
+            ('--pos', '{},{}'.format(*geometry['pos'])),
             ('--size', (
-                'fullscreen' if size_kw['fullscreen'] else
-                'maximized' if size_kw['maximized'] else
-                '{}x{}'.format(*size_kw['size'])
+                'fullscreen' if geometry['fullscreen'] else
+                'maximized' if geometry['maximized'] else
+                '{}x{}'.format(*geometry['size'])
             )),
             ('--splash_screen', splash_screen),
             blocking=False,
             verbose=verbose,
-        )
+        ))

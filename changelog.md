@@ -1,6 +1,7 @@
 
-### 2.2.1 (wip)
+### 2.2.1 (2026-04-10)
 
+- turn back to use toga as default opener.
 - fix multi-client access denied (duplicate window problem).
 
 ### 2.2.0 (2026-03-06)

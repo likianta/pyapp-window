@@ -34,15 +34,15 @@ def get_screen_size() -> T.Size1:
             text=True, shell=True, stdout=sp.PIPE
         )
         m = re.search(r'Resolution: (\d+) x (\d+)', r.stdout)
-        w, h = map(int, m.groups())
+        w, h = map(int, m.groups())  # type:ignore
         # print(ret, (w, h), ':v')
         return w, h - 80
     elif sys.platform == 'win32':
         # https://stackoverflow.com/a/3129524/9695911
         import ctypes
         user32 = ctypes.windll.user32
-        width = user32.GetSystemMetrics(0)
-        height = user32.GetSystemMetrics(1)
+        width = user32.GetSystemMetrics(0)  # type:ignore
+        height = user32.GetSystemMetrics(1)  # type:ignore
         return width, height - 80
     
     # notice: on windows, the size is taking account of the scale factor!
@@ -130,7 +130,9 @@ def normalize_size(size: T.Size0, account_scale_factor: bool = True) -> T.Size1:
             w = round(h * r)
         assert w <= w0 and h <= h0
         
-        return w, h
+        # if (w, h) != size:
+        #     print('finalize window size: {} x {}'.format(w, h))
+        return w, h  # type: ignore
     else:
         if size == 'fullscreen':
             return get_screen_size()

@@ -2,18 +2,21 @@
 FIXME: issue list:
     toga:
         - cannot maximize/minimize window at startup.
+    pywebview:
+        - cannot set window icon in windows and macos.
+        - may be crashed in older windows (caused by pythonnet, .NET etc.)
+        - cannot show the window in macos when running in poetry venv.
     webui2:
-        - sometimes not show favicon in window.
-        - sometimes appear two windows (one the target, another one is broken).
+        - the window instances of different applications affect each other.
+            - new app's window size doesn't work, it follows other app's window
+            size.
+            - when other app is closed, this app will also be shutdown weirdly.
+        - if starts from command line, window icon does not show.
     wxpython:
         ...
     chrome_appmode:
         - when close the window, will popup a new window with blank page.
         - requires that user PC has chrome installed.
-    pywebview:
-        - cannot set launch icon and window icon.
-        - may be crashed in older windows (caused by pythonnet, .NET etc.)
-        - cannot show the window in macos when running in poetry venv.
     pyside6:
         - too heavy to use.
     kivy:
@@ -41,21 +44,12 @@ def select_backend(prefer: t.Optional[T.Backend] = None) -> t.Callable:
         backend = prefer
     else:
         if sys.platform == 'linux':
-            try:
-                import webui
-                backend = 'webui2'
-            except ImportError:
-                backend = 'webbrowser'
+            backend = _get_available_backend('pywebview', 'webbrowser')
         elif sys.platform == 'win32':
-            backend = 'webui2'
+            backend = _get_available_backend('toga', 'pywebview', 'webui2')
         else:
-            try:
-                import toga
-                backend = 'toga'
-            except ImportError:
-                backend = 'webui2'
+            backend = _get_available_backend('toga', 'webui2')
     print(backend)
-    del prefer
     
     return {
         'chrome_appmode': open_with_chrome_appmode,
@@ -67,6 +61,29 @@ def select_backend(prefer: t.Optional[T.Backend] = None) -> t.Callable:
     }[backend]
 
 
+def _get_available_backend(*candidates: str):
+    for name in candidates:
+        try:
+            if name == 'chrome_appmode':
+                return name
+            elif name == 'pywebview':
+                import webview
+                return name
+            elif name == 'terminal':
+                raise NotImplementedError
+            elif name == 'toga':
+                import toga
+                return name
+            elif name == 'webbrowser':
+                return name
+            elif name == 'webui2':
+                import webui
+                return name
+        except ImportError:
+            continue
+    raise Exception('no available backend', candidates)
+
+
 # -----------------------------------------------------------------------------
 
 
@@ -76,6 +93,7 @@ def open_with_chrome_appmode(*_, **__):
 
 def open_with_pywebview(
     *,
+    icon: t.Optional[str] = None,  # supported only on GTK/Qt.
     fullscreen: bool = False,
     pos: T.Position,
     size: T.Size,
@@ -84,6 +102,80 @@ def open_with_pywebview(
     **_
 ) -> None:
     import webview  # pip install pywebview
+    
+    # if icon and sys.platform != 'linux':
+    #     from base64 import b64encode
+    #     from lk_utils import dedent
+    #
+    #     assert icon.endswith(('.ico', '.png', '.svg'))
+    #     icon_file = icon
+    #     icon_type = (
+    #         'image/x-icon' if icon.endswith('.ico') else
+    #         'image/png' if icon.endswith('.png') else
+    #         'image/svg+xml'  # if icon.endswith('.svg')
+    #     )
+    #     del icon
+    #
+    #     if icon_file.endswith('.svg'):
+    #         with open(icon_file, 'r') as f:
+    #             icon_data = (
+    #                 f.read()
+    #                 .replace('\n', ' ')
+    #                 .replace('"', "%22")
+    #                 .replace('#', '%23')
+    #             )
+    #             assert icon_data.startswith('<svg')
+    #     else:
+    #         with open(icon_file, 'rb') as f:
+    #             icon_data = b64encode(f.read()).decode('utf-8')
+    #
+    #     html = dedent(
+    #         '''
+    #         <html>
+    #         <head>
+    #             <title>{title}</title>
+    #             <link
+    #                 rel="icon"
+    #                 type="{favicon_type}"
+    #                 href="{favicon_data}"
+    #             >
+    #             <script src="webui.js"></script>
+    #         </head>
+    #         <body>
+    #             <iframe
+    #                 src="{target_url}"
+    #                 width="100%"
+    #                 height="100%"
+    #                 frameBorder="0"
+    #             ></iframe>
+    #         </body>
+    #         </html>
+    #         '''.format(
+    #             title=title,
+    #             # how to set favicon in html:
+    #             #   https://chatgpt.com/share/69aa57bc-ce24-800a-b71a-49843d849d70
+    #             #   https://stackoverflow.com/a/75832198
+    #             favicon_type=icon_type,
+    #             favicon_data=(
+    #                 'data:{},{}'.format(icon_type, icon_data)
+    #                 if icon_file.endswith('.svg') else
+    #                 'data:{};base64,{}'.format(icon_type, icon_data)
+    #             ),
+    #             target_url=url,
+    #         )
+    #     )
+    #     webview.create_window(
+    #         title,
+    #         html=html,
+    #         x=pos[0],
+    #         y=pos[1],
+    #         width=size[0],
+    #         height=size[1],
+    #         fullscreen=fullscreen,
+    #     )
+    #     webview.start()
+    #     return
+        
     webview.create_window(
         title,
         url,
@@ -93,7 +185,7 @@ def open_with_pywebview(
         height=size[1],
         fullscreen=fullscreen,
     )
-    webview.start()
+    webview.start(icon=icon)
 
 
 def open_with_terminal(
@@ -324,7 +416,7 @@ def open_with_webui2(
 ) -> None:
     """
     https://github.com/webui-dev/python-webui
-    pros: webui2 is light and fast.
+    https://webui.me/docs.html#/python
     """
     from base64 import b64encode
     from lk_utils import dedent
@@ -357,7 +449,7 @@ def open_with_webui2(
         with open(icon_file, 'rb') as f:
             icon_data = b64encode(f.read()).decode('utf-8')
     
-    win = webui.Window(window_id=None)
+    win = webui.Window()
     # print(win.get_window_id, ':v')
     win.set_icon(
         icon_data if icon_file.endswith('.svg') else
@@ -409,7 +501,6 @@ def open_with_webui2(
     # )
     
     # webui.set_config(webui.Config.multi_client, True)
-    webui.set_config(webui.Config.multi_client, False)
     
     # print(':tv', 'opening window')
     # win.show(html)
