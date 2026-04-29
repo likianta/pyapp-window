@@ -23,6 +23,7 @@ class T:
         'maximized': bool,
         'fullscreen': bool,
     })
+    OutsizeScheme = T1.OutsizeScheme
 
 
 def open_window(
@@ -33,6 +34,7 @@ def open_window(
     port: int = None,
     pos: T.AnyPos = 'center',
     size: T.AnySize = (1200, 900),
+    outsize_scheme: T.OutsizeScheme = 'aspect_ratio',
     check_url: bool = False,
     splash_screen: str = None,
     blocking: bool = True,
@@ -79,9 +81,9 @@ def open_window(
                 isinstance(size[0], int) and
                 isinstance(size[1], int)
             )
-            geometry['size'] = size  # type: ignore
+            geometry['size'] = size
     else:
-        geometry['size'] = normalize_size(size)
+        geometry['size'] = normalize_size(size, outsize_scheme=outsize_scheme)
     assert geometry['size']
     geometry['pos'] = normalize_position(pos, geometry['size'])
     del pos, size
@@ -102,7 +104,7 @@ def open_window(
         if close_window_to_exit:
             sys.exit()
     else:
-        return t.cast(t.Optional[Popen], run_cmd_args(
+        return t.cast(Popen, run_cmd_args(
             (sys.executable, '-m', 'pyapp_window'),
             ('--title', title),
             ('--url', url),

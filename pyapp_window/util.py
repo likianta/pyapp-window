@@ -3,6 +3,7 @@ import re
 import subprocess as sp
 import sys
 import typing as t
+from functools import cache
 from time import sleep
 from time import time
 
@@ -13,6 +14,7 @@ _has_proxy_set_before = 'HTTP_PROXY' in os.environ
 
 
 class T:
+    OutsizeScheme = t.Literal['aspect_ratio', 'crop', 'keep']
     Position0 = t.Union[
         t.Literal['center'],
         t.Tuple[int, int],
@@ -27,29 +29,34 @@ class T:
     Size1 = t.Tuple[int, int]
 
 
+@cache
 def get_screen_size() -> T.Size1:
     if sys.platform == 'darwin':
         r = sp.run(
             'echo $(system_profiler SPDisplaysDataType)',
-            text=True, shell=True, stdout=sp.PIPE
+            text=True,
+            shell=True,
+            stdout=sp.PIPE,
         )
         m = re.search(r'Resolution: (\d+) x (\d+)', r.stdout)
-        w, h = map(int, m.groups())  # type:ignore
+        w, h = map(int, m.groups())
         # print(ret, (w, h), ':v')
         return w, h - 80
     elif sys.platform == 'win32':
         # https://stackoverflow.com/a/3129524/9695911
         import ctypes
+
         user32 = ctypes.windll.user32
-        width = user32.GetSystemMetrics(0)  # type:ignore
-        height = user32.GetSystemMetrics(1)  # type:ignore
+        width = user32.GetSystemMetrics(0)
+        height = user32.GetSystemMetrics(1)
         return width, height - 80
-    
+
     # notice: on windows, the size is taking account of the scale factor!
     # i.e. if your screen resolution is 3456x2160, and the scale factor is
     # 150%, the return value will be (2304, 1440) instead of (3456, 2160).
     # see also `normalize_size : if sys.platform == 'win32'`.
     import tkinter
+
     root = tkinter.Tk()
     width = root.winfo_screenwidth()
     height = root.winfo_screenheight()
@@ -60,11 +67,11 @@ def get_screen_size() -> T.Size1:
 def normalize_position(pos: T.Position0, size: T.Size1 = None) -> T.Position1:
     w0, h0 = get_screen_size()
     w1, h1 = size if size else (None, None)
-    
+
     if pos == 'center':
         x, y = (w0 - w1) // 2, (h0 - h1) // 2
         return (x if x >= 0 else 0), (y if y >= 0 else 0)
-    
+
     if isinstance(pos, str):
         x, y = pos.split(',')
     else:
@@ -78,7 +85,7 @@ def normalize_position(pos: T.Position0, size: T.Size1 = None) -> T.Position1:
     else:
         y = int(y)
     # assert isinstance(x, int) and isinstance(y, int)
-    
+
     # adapt to screen size
     if x < 0 or y < 0:
         if x < 0:
@@ -89,50 +96,61 @@ def normalize_position(pos: T.Position0, size: T.Size1 = None) -> T.Position1:
         x = w0 - 10
     if y > h0:
         y = h0 - 10
-    
+
     assert x >= 0 and y >= 0
     return x, y
 
 
-def normalize_size(size: T.Size0, account_scale_factor: bool = True) -> T.Size1:
+def normalize_size(
+    size: T.Size0,
+    account_scale_factor: bool = True,
+    outsize_scheme: T.OutsizeScheme = 'aspect_ratio',
+) -> T.Size1:
     if isinstance(size, tuple):
         w, h = size
-        
+
         # resolve fractional value
         w0, h0 = get_screen_size()
         # print((w0, h0), (w, h), ':v')
-        
+
         if w < 1 or h < 1:
             if w < 1:
                 w = round(w0 * w)
             if h < 1:
                 h = round(h0 * h)
         assert w > 0 and h > 0
-        
+
         # adapt to screen size
         if account_scale_factor:
             if sys.platform == 'win32':
                 # detect scale factor
                 import ctypes
+
                 factor = ctypes.windll.shcore.GetScaleFactorForDevice(0) / 100
                 #   e.g. 1.5, means 150%
                 w, h = round(w / factor), round(h / factor)
             else:
                 pass  # TODO
-        
+
         if w > w0:
-            r = h / w
-            w = round(w0 * 0.95)
-            h = round(w * r)
+            if outsize_scheme == 'aspect_ratio':
+                r = h / w
+                w = round(w0 * 0.95)
+                h = round(w * r)
+            elif outsize_scheme == 'crop':
+                w = w0 - 10
         if h > h0:
-            r = w / h
-            h = round(h0 * 0.95)
-            w = round(h * r)
+            if outsize_scheme == 'aspect_ratio':
+                r = w / h
+                h = round(h0 * 0.95)
+                w = round(h * r)
+            elif outsize_scheme == 'crop':
+                h = h0 - 10
         assert w <= w0 and h <= h0
-        
+
         # if (w, h) != size:
         #     print('finalize window size: {} x {}'.format(w, h))
-        return w, h  # type: ignore
+        return w, h
     else:
         if size == 'fullscreen':
             return get_screen_size()
@@ -143,13 +161,12 @@ def normalize_size(size: T.Size0, account_scale_factor: bool = True) -> T.Size1:
             return normalize_size((1200, 900))
         elif size == 'portrait':
             return normalize_size((640, 960))
-        else:
-            raise Exception(size)
 
 
 def wait_webpage_ready(url: str, timeout: float = 30) -> None:
     import lk_logger
     import requests
+
     start = time()
     with lk_logger.timing():
         while True:
@@ -158,19 +175,17 @@ def wait_webpage_ready(url: str, timeout: float = 30) -> None:
                     r = requests.head(url)
                 else:
                     r = requests.head(
-                        url, proxies={'http': None, 'https': None}  # noqa
+                        url,
+                        proxies={'http': None, 'https': None},  # noqa
                     )
             except requests.exceptions.ConnectionError as e:
                 if 'WinError 10061' in str(e):
                     print(
                         'stop checking url since we encountered proxy error',
-                        ':ptv6'
+                        ':ptv6',
                     )
                     break
-            if (
-                200 <= r.status_code < 400 or
-                r.status_code in (400, 405, 500)
-            ):
+            if 200 <= r.status_code < 400 or r.status_code in (400, 405, 500):
                 print('webpage ready', url, ':ptv4')
                 break
             elif r.status_code == 502:
@@ -186,6 +201,7 @@ def wait_webpage_ready(url: str, timeout: float = 30) -> None:
 def wait_webpage_ready_2(timeout: float = 30) -> None:
     import lk_logger
     from lk_utils import wait
+
     with lk_logger.timing():
         for _ in wait(timeout, 0.2):
             if os.getenv('PYAPP_WINDOW_TARGET_READY'):

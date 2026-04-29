@@ -1,67 +1,71 @@
 
+### 2.2.2 (wip)
+
+- Add outsize scheme.
+
 ### 2.2.1 (2026-04-10)
 
-- turn back to use toga as default opener.
-- fix multi-client access denied (duplicate window problem).
+- Turn back to use toga as default opener.
+- Fix multi-client access denied (duplicate window problem).
 
 ### 2.2.0 (2026-03-06)
 
-- set webui2 as default backend.
+- Set webui2 as default backend.
 
 ### 2.1.4 (2025-09-16)
 
-- make util module works without tkinter (for embeddable python)
-- fix possible blocked dlls in opening window on windows system
+- Make util module works without tkinter (for embeddable python)
+- Fix possible blocked dlls in opening window on windows system
 
 ### 2.1.3 (2025-07-25)
 
-- tweak entrance arguments
-- add "terminal" window (experimental)
+- Tweak entrance arguments
+- Add "terminal" window (experimental)
 
 ### 2.1.2 (2024-12-11)
 
-- optimize format of cli params `pos` and `size`
+- Optimize format of cli params `pos` and `size`
 
 ### 2.1.1 (2024-11-13)
 
-- fix checking url
+- Fix checking url
 
 ### 2.1.0 (2024-10-25)
 
-- faster checking url ready
-- splash screen
-- fix getting screen size accounting into scale factor
-- fix proxy issue when checking url
+- Faster checking url ready
+- Splash screen
+- Fix getting screen size accounting into scale factor
+- Fix proxy issue when checking url
 
 ### 2.0.0 (2024-07-18)
 
-- new paradigm
-- add `pywebview` backend
-- run in independent process
+- New paradigm
+- Add `pywebview` backend
+- Run in independent process
 
 ### 1.0.0 (2024-05-20)
 
-- unify backend interfaces
-- fix exiting issue
-- adaptive window size respect to the screen size
+- Unify backend interfaces
+- Fix exiting issue
+- Adaptive window size respect to the screen size
 
 ### 0.4.0
 
-- multiple backends support, for different platforms
-- battery included (chrome app mode)
+- Multiple backends support, for different platforms
+- Battery included (chrome app mode)
 
 ### 0.3.3
 
-- integrate process interfaces
+- Integrate process interfaces
 
 ### 0.3.2
 
-- extend copilot backend type
+- Extend copilot backend type
 
 ### 0.3.1
 
-- wait webpage ready
+- Wait webpage ready
 
 ### 0.3.0
 
-- add copilot backend
+- Add copilot backend
