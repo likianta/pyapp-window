@@ -2,21 +2,18 @@
 
 [[package]]
 name = "argsense"
-version = "1.1.0"
+version = "1.1.1"
 description = "New command line interface based on Rich library."
 optional = false
 python-versions = ">=3.8"
 groups = ["main", "dev"]
 files = [
-    {file = "argsense-1.1.0-py3-none-any.whl", hash = "sha256:227768813b5bcbbe06e2702b2b1184b29b2703bd80d5ae4a8cc06aa39037c3aa"},
+    {file = "argsense-1.1.1-py3-none-any.whl", hash = "sha256:3ae655478a3c0b80f431e5cbfebe9e3a397ab207edf0b32f8901ee8c79652b27"},
 ]
 
 [package.dependencies]
-lk-logger = ">=6.0.6,<7.0.0"
-rich = ">=13.9.0"
-
-[package.extras]
-gui = ["pysimplegui"]
+lk-logger = ">=6.0.7,<7.0.0"
+rich = ">=14.0.0,<15.0.0"
 
 [package.source]
 type = "legacy"
@@ -2238,4 +2235,4 @@ reference = "aliyun"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.8"
-content-hash = "a2dad3d8572d003217e47c22dfa605614ca23dac75368ab98433a046d2051125"
+content-hash = "7b85c2ca39171b2537161c04d6a20450d125178825ebca3bc967e2c81e506e46"

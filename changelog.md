@@ -1,7 +1,7 @@
 
-### 2.2.2 (wip)
+### 2.2.2 (2026-05-08)
 
-- Add outsize scheme.
+- Add oversize scheme.
 
 ### 2.2.1 (2026-04-10)
 

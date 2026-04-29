@@ -14,7 +14,7 @@ _has_proxy_set_before = 'HTTP_PROXY' in os.environ
 
 
 class T:
-    OutsizeScheme = t.Literal['aspect_ratio', 'crop', 'keep']
+    OversizeScheme = t.Literal['aspect_ratio', 'crop', 'keep']
     Position0 = t.Union[
         t.Literal['center'],
         t.Tuple[int, int],
@@ -104,7 +104,7 @@ def normalize_position(pos: T.Position0, size: T.Size1 = None) -> T.Position1:
 def normalize_size(
     size: T.Size0,
     account_scale_factor: bool = True,
-    outsize_scheme: T.OutsizeScheme = 'aspect_ratio',
+    oversize_scheme: T.OversizeScheme = 'aspect_ratio',
 ) -> T.Size1:
     if isinstance(size, tuple):
         w, h = size
@@ -133,18 +133,18 @@ def normalize_size(
                 pass  # TODO
 
         if w > w0:
-            if outsize_scheme == 'aspect_ratio':
+            if oversize_scheme == 'aspect_ratio':
                 r = h / w
                 w = round(w0 * 0.95)
                 h = round(w * r)
-            elif outsize_scheme == 'crop':
+            elif oversize_scheme == 'crop':
                 w = w0 - 10
         if h > h0:
-            if outsize_scheme == 'aspect_ratio':
+            if oversize_scheme == 'aspect_ratio':
                 r = w / h
                 h = round(h0 * 0.95)
                 w = round(h * r)
-            elif outsize_scheme == 'crop':
+            elif oversize_scheme == 'crop':
                 h = h0 - 10
         assert w <= w0 and h <= h0
 

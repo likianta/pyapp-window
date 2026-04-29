@@ -1,6 +1,6 @@
 [project]
 name = "pyapp-window"
-version = "2.2.2b0"
+version = "2.2.2"
 description = "Launching URL with native window in WebView mode."
 license = "MIT"
 authors = [{ name = "Likianta", email = "likianta@foxmail.com" }]
@@ -14,7 +14,7 @@ homepage = "https://github.com/likianta/pyapp-window"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-argsense = "^1.1.0"
+argsense = "^1.1.1"
 lk-logger = "^6.0.7"
 lk-utils = "^3.5.2"
 pywebview = { version = "^6.1.0", platform = "linux", python = ">=3.9,<3.15" }
