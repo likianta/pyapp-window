@@ -1,3 +1,8 @@
+# CHANGELOG
+
+### 2.2.3 (2026-07-08)
+
+- Remove `lk-logger` dependency.
 
 ### 2.2.2 (2026-05-08)
 

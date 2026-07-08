@@ -164,45 +164,43 @@ def normalize_size(
 
 
 def wait_webpage_ready(url: str, timeout: float = 30) -> None:
-    import lk_logger
     import requests
 
     start = time()
-    with lk_logger.timing():
-        while True:
-            try:
-                if _has_proxy_set_before:
-                    r = requests.head(url)
-                else:
-                    r = requests.head(
-                        url,
-                        proxies={'http': None, 'https': None},  # noqa
-                    )
-            except requests.exceptions.ConnectionError as e:
-                if 'WinError 10061' in str(e):
-                    print(
-                        'stop checking url since we encountered proxy error',
-                        ':ptv6',
-                    )
-                    break
-            if 200 <= r.status_code < 400 or r.status_code in (400, 405, 500):
-                print('webpage ready', url, ':ptv4')
-                break
-            elif r.status_code == 502:
-                sleep(0.5)
-                if time() - start > timeout:
-                    raise TimeoutError('timeout waiting for webpage ready')
-                continue
+    while True:
+        try:
+            if _has_proxy_set_before:
+                r = requests.head(url)
             else:
-                raise Exception(r.status_code)
+                r = requests.head(
+                    url,
+                    proxies={'http': None, 'https': None},  # ty: ignore
+                )
+        except requests.exceptions.ConnectionError as e:
+            if 'WinError 10061' in str(e):
+                print(
+                    'stop checking url since we encountered proxy error',
+                    ':ptv6',
+                )
+                break
+        if 200 <= r.status_code < 400 or r.status_code in (400, 405, 500):
+            print('webpage ready', url, ':ptv4')
+            break
+        elif r.status_code == 502:
+            sleep(0.5)
+            if time() - start > timeout:
+                raise TimeoutError('timeout waiting for webpage ready')
+            continue
+        else:
+            raise Exception(r.status_code)
 
 
 # TODO: not proven yet
 def wait_webpage_ready_2(timeout: float = 30) -> None:
-    import lk_logger
-    from lk_utils import wait
+    from lk_utils.time import timing
+    from lk_utils.time import wait
 
-    with lk_logger.timing():
+    with timing():
         for _ in wait(timeout, 0.2):
             if os.getenv('PYAPP_WINDOW_TARGET_READY'):
                 print('webpage ready', ':t')
