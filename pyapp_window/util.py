@@ -2,7 +2,7 @@ import os
 import re
 import subprocess as sp
 import sys
-import typing as t
+import typing as tp
 from functools import cache
 from time import sleep
 from time import time
@@ -14,19 +14,19 @@ _has_proxy_set_before = 'HTTP_PROXY' in os.environ
 
 
 class T:
-    OversizeScheme = t.Literal['aspect_ratio', 'crop', 'keep']
-    Position0 = t.Union[
-        t.Literal['center'],
-        t.Tuple[int, int],
-        t.Tuple[int, t.Literal['center']],
-        t.Tuple[t.Literal['center'], int],
+    OversizeScheme = tp.Literal['aspect_ratio', 'crop', 'keep']
+    Position0 = tp.Union[
+        tp.Literal['center'],
+        tp.Tuple[int, int],
+        tp.Tuple[int, tp.Literal['center']],
+        tp.Tuple[tp.Literal['center'], int],
     ]
-    Position1 = t.Tuple[int, int]
-    Size0 = t.Union[
-        t.Tuple[t.Union[int, float], t.Union[int, float]],
-        t.Literal['fullscreen', 'landscape', 'maximized', 'portrait'],
+    Position1 = tp.Tuple[int, int]
+    Size0 = tp.Union[
+        tp.Tuple[tp.Union[int, float], tp.Union[int, float]],
+        tp.Literal['fullscreen', 'landscape', 'maximized', 'portrait'],
     ]
-    Size1 = t.Tuple[int, int]
+    Size1 = tp.Tuple[int, int]
 
 
 @cache
@@ -64,9 +64,15 @@ def get_screen_size() -> T.Size1:
     return width, height - 80  # -80: strip the height of the taskbar
 
 
-def normalize_position(pos: T.Position0, size: T.Size1 = None) -> T.Position1:
+def normalize_position(
+    pos: T.Position0, size: tp.Optional[T.Size1] = None
+) -> T.Position1:
+    w0: int
+    h0: int
+    w1: int
+    h1: int
     w0, h0 = get_screen_size()
-    w1, h1 = size if size else (None, None)
+    w1, h1 = size if size else (None, None)  # type: ignore
 
     if pos == 'center':
         x, y = (w0 - w1) // 2, (h0 - h1) // 2
@@ -150,7 +156,7 @@ def normalize_size(
 
         # if (w, h) != size:
         #     print('finalize window size: {} x {}'.format(w, h))
-        return w, h
+        return w, h  # type: ignore
     else:
         if size == 'fullscreen':
             return get_screen_size()

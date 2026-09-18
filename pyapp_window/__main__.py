@@ -1,4 +1,5 @@
 import re
+import typing as tp
 
 from argsense import cli
 
@@ -8,12 +9,12 @@ from .opener import open_window
 @cli
 def launch(
     # primary params
-    url: str = None,
-    port: int = None,
+    url: str = '',
+    port: int = 0,
     # secondary params
-    backend: str = None,
-    host: str = None,
-    icon: str = None,
+    backend: tp.Optional[str] = None,
+    host: str = '',
+    icon: str = '',
     pos: str = 'center',
     size: str = 'landscape',
     title: str = 'PyApp Window',
@@ -47,10 +48,10 @@ def launch(
     assert url or port, 'either `url` or `port` must be set.'
     if ':' in pos or ',' in pos:
         x, y = map(int, re.split(r'[:,]', pos))
-        pos = (x, y)
+        pos = (x, y)  # type: ignore
     if ':' in size or 'x' in size:
         w, h = map(int, re.split(r'[:x]', size))
-        size = (w, h)
+        size = (w, h)  # type: ignore
     else:
         assert size in ('fullscreen', 'maximized', 'landscape', 'portrait')
     open_window(
@@ -59,15 +60,15 @@ def launch(
         icon=icon,
         host=host,
         port=port,
-        pos=pos,
-        size=size,
+        pos=pos,  # type: ignore
+        size=size,  # type: ignore
         blocking=True,
         verbose=False,
-        backend=backend,
+        backend=backend,  # type: ignore
     )
 
 
 if __name__ == '__main__':
-    # pox -m pyapp_window -h
-    # pox -m pyapp_window -p 2030 -s 1300x1700
+    # python -m pyapp_window -h
+    # python -m pyapp_window -p 2030 -s 1300x1700
     cli.run(launch)

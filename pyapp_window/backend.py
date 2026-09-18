@@ -22,6 +22,7 @@ FIXME: issue list:
     kivy:
         ...
 """
+
 import sys
 import typing as t
 
@@ -50,14 +51,14 @@ def select_backend(prefer: t.Optional[T.Backend] = None) -> t.Callable:
         else:
             backend = _get_available_backend('toga', 'webui2')
     print(backend)
-    
+
     return {
         'chrome_appmode': open_with_chrome_appmode,
-        'pywebview'     : open_with_pywebview,
-        'terminal'      : open_with_terminal,
-        'toga'          : open_with_toga,
-        'webbrowser'    : open_with_webbrowser,
-        'webui2'        : open_with_webui2,
+        'pywebview': open_with_pywebview,
+        'terminal': open_with_terminal,
+        'toga': open_with_toga,
+        'webbrowser': open_with_webbrowser,
+        'webui2': open_with_webui2,
     }[backend]
 
 
@@ -67,17 +68,20 @@ def _get_available_backend(*candidates: str):
             if name == 'chrome_appmode':
                 return name
             elif name == 'pywebview':
-                import webview
+                import webview  # noqa
+
                 return name
             elif name == 'terminal':
                 raise NotImplementedError
             elif name == 'toga':
-                import toga
+                import toga  # noqa
+
                 return name
             elif name == 'webbrowser':
                 return name
             elif name == 'webui2':
-                import webui
+                import webui  # noqa
+
                 return name
         except ImportError:
             continue
@@ -99,10 +103,10 @@ def open_with_pywebview(
     size: T.Size,
     title: str,
     url: str,
-    **_
+    **_,
 ) -> None:
     import webview  # pip install pywebview
-    
+
     # if icon and sys.platform != 'linux':
     #     from base64 import b64encode
     #     from lk_utils import dedent
@@ -175,7 +179,7 @@ def open_with_pywebview(
     #     )
     #     webview.start()
     #     return
-        
+
     webview.create_window(
         title,
         url,
@@ -195,12 +199,12 @@ def open_with_terminal(
     pos: T.Position,
     size: T.Size,
     suppress_size_warning: bool = False,
-    **_
+    **_,
 ) -> None:
     """
     open terminal app, the terminal app should be pre-installed.
     for windows, we prefer to open wt.exe (windows terminal).
-    
+
     params:
         size: the `(width, height)` means `(cols, rows)`. suggested values are:
             - `(80, 24)`: for small terminal.
@@ -215,10 +219,10 @@ def open_with_terminal(
             'if you are sure this is what you want, try again with setting '
             '`suppress_size_warning=True`.'
         )
-    
+
     import os
     from lk_utils import run_cmd_args
-    
+
     if sys.platform == 'win32':
         if os.path.exists(
             wt := '{}/Microsoft/WindowsApps/wt.exe'.format(
@@ -228,11 +232,15 @@ def open_with_terminal(
             # https://learn.microsoft.com/en-us/windows/terminal/command-line
             # -arguments?tabs=windows#options-and-commands
             run_cmd_args(
-                wt,
-                '--pos', '{},{}'.format(*pos),
-                '--size', '{},{}'.format(*size),
-                (fullscreen and '--fullscreen' or ''),
-                (maximized and '--maximized' or ''),
+                (
+                    wt,
+                    '--pos',
+                    '{},{}'.format(*pos),
+                    '--size',
+                    '{},{}'.format(*size),
+                    (fullscreen and '--fullscreen' or ''),
+                    (maximized and '--maximized' or ''),
+                ),
                 verbose=True,  # TEST
             )
         else:
@@ -245,28 +253,28 @@ def open_with_toga(
     *,
     appid: str = 'dev.likianta.pyapp_window',
     fullscreen: bool = False,
-    icon: str = None,
+    icon: str = '',
     # maximized: bool = False,  # TODO
     pos: T.Position,
     # size: t.Union[T.Size, t.Literal['fullscreen', 'maximized']],
     size: T.Size,
-    splash_screen: str = None,
+    splash_screen: str = '',
     title: str,
     url: str,
-    **_
+    **_,
 ) -> None:
     import os
     import toga
     from lk_utils import fs, new_thread
     from toga.style.pack import CENTER, COLUMN, Pack
     from .util import wait_webpage_ready
-    
+
     def unblock_dlls(pkg_dir: str) -> None:
         """
         if user extracted site-packages from a ".zip" file which was -
         downloaded from the internet, the `<site-packages>/pythonnet/*.dll` -
         are in "locked" status. we need to unlock them first.
-        
+
         ref:
             https://stackoverflow.com/questions/20886450/unblock-a-file-in
             -windows-from-a-python-script
@@ -283,18 +291,18 @@ def open_with_toga(
                     # FIXME: some computers may raise [WinError 2] the -
                     #   system cannot find the file specified.
                     pass
-    
+
     if os.name == 'nt':
         site_packages_dir = fs.parent(toga.__path__[0])
         unblock_dlls(f'{site_packages_dir}/pythonnet')
         unblock_dlls(f'{site_packages_dir}/toga_winforms')
-    
+
     class MyApp(toga.App):
         _progress_bar: t.Optional[toga.ProgressBar]
-        
+
         def __init__(self) -> None:
             super().__init__(formal_name=title, app_id=appid, icon=icon)
-        
+
         # noinspection PyTypeChecker
         def startup(self) -> None:
             if splash_screen:
@@ -319,7 +327,7 @@ def open_with_toga(
                                 flex=1,
                                 padding_left=h_padding,
                                 padding_right=h_padding,
-                            )
+                            ),
                         ),
                         # toga.ImageView(
                         #     toga.Image(xpath('loading_motion_blur_2.png')),
@@ -332,7 +340,7 @@ def open_with_toga(
                         #     )
                         # ),
                         bar := toga.ProgressBar(
-                            max=None,
+                            max=None,  # type: ignore
                             style=Pack(
                                 alignment=CENTER,
                                 # color='#E31B25',
@@ -341,78 +349,73 @@ def open_with_toga(
                                 padding_right=h_padding,
                                 padding_bottom=20,
                                 width=img_width,
-                            )
+                            ),
                         ),
                     ),
-                    style=Pack(
-                        direction=COLUMN
-                    )
+                    style=Pack(direction=COLUMN),
                 )
                 self._progress_bar = bar
-                self._progress_bar.start()  # noqa
+                self._progress_bar.start()  # type: ignore
                 # TEST: if you want to test only splash screen, comment below
                 #   line.
-                self._wait_webpage_ready(url)
+                self._wait_webpage_ready(url)  # type: ignore
             else:
                 view = toga.WebView(url=url)
                 self._progress_bar = None
             self.main_window = MainWindow(
-                id='main', title=title, position=pos, size=size, content=view,
+                id='main', title=title, position=pos, size=size, content=view
             )
             # if maximized:
             #     self.main_window.maximized = True
             if fullscreen:
-                self.main_window.full_screen = True
-            self.main_window.show()  # noqa
-        
+                self.main_window.full_screen = True  # type: ignore
+            self.main_window.show()  # type: ignore
+
         @new_thread()
         def _wait_webpage_ready(self, url: str, timeout: float = 30) -> None:
             wait_webpage_ready(url, timeout)
-            
+
             # don't update ui in non-main thread directly, instead, toga has
             # pre-set `self.loop` for this purpose.
             # https://stackoverflow.com/a/77350586/9695911
             def _replace_view() -> None:
-                self._progress_bar.stop()  # noqa
-                self.main_window.content = toga.WebView(url=url)
-            
-            self.loop.call_soon_threadsafe(_replace_view)  # noqa
-    
+                self._progress_bar.stop()  # type: ignore
+                self.main_window.content = toga.WebView(url=url)  # type: ignore
+
+            self.loop.call_soon_threadsafe(_replace_view)
+
     class MainWindow(toga.MainWindow):
         # pass
-        
+
         # workaround to suppress warning from
         # `$site-packages/toga_winforms/window.py : line 652 and line 137`
-        _on_gain_focus = lambda self: True
-        
+        _on_gain_focus = lambda self: True  # noqa
+
         # def __init__(self, *args, **kwargs):
         #     super().__init__(*args, **kwargs)
         #     # workaround to suppress warning from
         #     # `$site-packages/toga_winforms/window.py : line 652 and line 137`
         #     if not hasattr(self, '_on_gain_focus'):
         #         self._on_gain_focus = lambda self: True
-    
+
     app = MyApp()
     app.main_loop()
 
 
-def open_with_webbrowser(
-    *,
-    url: str,
-    **_
-) -> None:
+def open_with_webbrowser(*, url: str, **_) -> None:
     import webbrowser
+
     webbrowser.open_new_tab(url)
 
 
 def open_with_webui2(
     *,
-    icon: str = None,  # given a file path. supports ico, png, svg.
+    icon: str = '',  # given a file path. supports ico, png, svg.
     pos: T.Position,
     size: T.Size,
     title: str,
     url: str,
-    **_
+    **_,
 ) -> None:
     """
     https://github.com/webui-dev/python-webui
@@ -422,45 +425,48 @@ def open_with_webui2(
     from lk_utils import dedent
     from lk_utils import xpath
     from webui import webui  # pip install webui2
-    
+
     if icon:
         assert icon.endswith(('.ico', '.png', '.svg'))
         icon_file = icon
         icon_type = (
-            'image/x-icon' if icon.endswith('.ico') else
-            'image/png' if icon.endswith('.png') else
-            'image/svg+xml'  # if icon.endswith('.svg')
+            'image/x-icon'
+            if icon.endswith('.ico')
+            else 'image/png'
+            if icon.endswith('.png')
+            else 'image/svg+xml'  # if icon.endswith('.svg')
         )
     else:
         icon_file = xpath('./favicon.svg')
         icon_type = 'image/svg+xml'
     del icon
-    
+
     if icon_file.endswith('.svg'):
         with open(icon_file, 'r') as f:
             icon_data = (
                 f.read()
                 .replace('\n', ' ')
-                .replace('"', "%22")
+                .replace('"', '%22')
                 .replace('#', '%23')
             )
             assert icon_data.startswith('<svg')
     else:
         with open(icon_file, 'rb') as f:
             icon_data = b64encode(f.read()).decode('utf-8')
-    
+
     win = webui.Window()
     # print(win.get_window_id, ':v')
     win.set_icon(
-        icon_data if icon_file.endswith('.svg') else
-        '<img src="data:{};base64,{}">'.format(icon_type, icon_data),
-        icon_type
+        icon_data
+        if icon_file.endswith('.svg')
+        else '<img src="data:{};base64,{}">'.format(icon_type, icon_data),
+        icon_type,
     )
     win.set_position(pos[0], pos[1])
     win.set_size(size[0], size[1])
-    
+
     html = dedent(
-        '''
+        """
         <html>
         <head>
             <title>{title}</title>
@@ -480,7 +486,7 @@ def open_with_webui2(
             ></iframe>
         </body>
         </html>
-        '''.format(
+        """.format(
             title=title,
             # how to set favicon in html:
             #   https://chatgpt.com/share/69aa57bc-ce24-800a-b71a-49843d849d70
@@ -488,8 +494,8 @@ def open_with_webui2(
             favicon_type=icon_type,
             favicon_data=(
                 'data:{},{}'.format(icon_type, icon_data)
-                if icon_file.endswith('.svg') else
-                'data:{};base64,{}'.format(icon_type, icon_data)
+                if icon_file.endswith('.svg')
+                else 'data:{};base64,{}'.format(icon_type, icon_data)
             ),
             target_url=url,
         )
@@ -499,9 +505,9 @@ def open_with_webui2(
     #     html.replace('<script src="webui.js"></script>', '', 1),
     #     'test/example_page.html'
     # )
-    
+
     # webui.set_config(webui.Config.multi_client, True)
-    
+
     # print(':tv', 'opening window')
     # win.show(html)
     # win.show(url)
