@@ -1,6 +1,6 @@
 [project]
 name = "pyapp-window"
-version = "2.2.4b0"
+version = "2.2.4b3"
 description = "Launching URL with native window in WebView mode."
 authors = [{ name = "Likianta", email = "likianta@foxmail.com" }]
 license = "MIT"
@@ -8,13 +8,12 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "argsense>=1.1.2",
-    "lk-utils>=3.8.2a20",
-    "pywebview>=6.1.0; sys_platform == 'linux' and python_version >= '3.9' and python_version < '3.15'",
-    "requests>=2.32.4; python_version >= '3.8' and python_version < '3.9'",
-    "requests>=2.32.5; python_version >= '3.9'",
-    "toga<0.4.7; sys_platform != 'linux' and python_version >= '3.8' and python_version < '3.9'",
-    "toga>=0.5.0,<0.5.3; sys_platform != 'linux' and python_version >= '3.9' and python_version < '3.10'",
-    "toga>=0.5.3; sys_platform != 'linux' and python_version >= '3.10' and python_version < '3.15'",
+    "lk-utils>=3.8.1",
+    "pywebview>=6.2.1; sys_platform == 'linux' and python_version >= '3.9' and python_version < '3.15'",
+    # "toga<0.4.7; sys_platform != 'linux' and python_version >= '3.8' and python_version < '3.9'",
+    # "toga>=0.5.0,<0.5.3; sys_platform != 'linux' and python_version >= '3.9' and python_version < '3.10'",
+    # "toga>=0.5.3; sys_platform != 'linux' and python_version >= '3.10' and python_version < '3.15'",
+    "toga>=0.5.6; sys_platform != 'linux'",
     
     # -- toga dependencies
     # "cffi>=1.17.1; sys_platform == 'win32'",
@@ -22,8 +21,9 @@ dependencies = [
     #     { version = "<3.50.0", platform = "!=linux", python = "<3.9" },
     #     { version = "^3.50.0", platform = "!=linux", python = ">=3.9,<4.0" },
     # ]
-    "pythonnet>=3.0.5; sys_platform == 'win32' and python_version >= '3.8' and python_version < '3.14'",
-    "pythonnet>=3.1.0rc0; sys_platform == 'win32' and python_version >= '3.14' and python_version < '3.15'",
+    # "pythonnet>=3.0.5; sys_platform == 'win32' and python_version >= '3.8' and python_version < '3.14'",
+    # "pythonnet>=3.2.0rc0; sys_platform == 'win32' and python_version >= '3.14' and python_version < '3.15'",
+    "pythonnet>=3.2.0rc0",
     # toga-core = [
     #     { version = "^0.5.3", platform = "win32", python = ">=3.10,<3.15" },
     #     { version = ">=0.5.0,<0.5.3", platform = "win32", python = ">=3.9,<3.10" },
@@ -42,11 +42,12 @@ requires = ["hatchling"]
 
 [dependency-groups]
 dev = [
-    "pythonnet>=3.0.5; python_version >= '3.9' and python_version < '3.14'",
-    "pythonnet>=3.1.0rc0; python_version >= '3.14' and python_version < '3.15'",
-    "pywebview>=6.1.0; python_version >= '3.12' and python_version < '3.15'",
-    "toga>=0.5.3; python_version >= '3.12' and python_version < '3.15'",
-    "webui2>=2.5.7",
+    # "pywebview>=6.2.1; python_version >= '3.12' and python_version < '3.15'",
+    "pywebview>=6.2.1",
+    # "requests>=2.34.2",
+    # "toga>=0.5.6; python_version >= '3.12' and python_version < '3.15'",
+    "toga>=0.5.6",
+    "webui2>=2.5.8",
     # "wxpython>=4.2.5; python_version >= '3.10' and python_version < '3.15'",
 ]
 
@@ -101,8 +102,8 @@ default = true
 [[tool.uv.index]]
 name = "likianta"
 url = "http://localhost:2131/"
-# explicit = true
+explicit = true
 
-[tool.uv.sources]
+# [tool.uv.sources]
 # argsense = { index = "likianta" }
-lk-utils = { index = "likianta" }
+# lk-utils = { index = "likianta" }
