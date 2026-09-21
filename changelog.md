@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 2.2.4 (2026-09-23)
+
+- Fix `wait_webpage_ready`.
+
 ### 2.2.3 (2026-07-08)
 
 - Remove `lk-logger` dependency.

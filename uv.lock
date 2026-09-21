@@ -307,7 +307,7 @@ wheels = [
 
 [[package]]
 name = "pyapp-window"
-version = "2.2.4b2"
+version = "2.2.4"
 source = { editable = "." }
 dependencies = [
     { name = "argsense" },

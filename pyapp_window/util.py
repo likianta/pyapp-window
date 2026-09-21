@@ -1,16 +1,12 @@
-import os
 import re
 import subprocess as sp
 import sys
 import typing as tp
 from functools import cache
+from socket import socket
+from time import monotonic
 from time import sleep
-from time import time
-
-_has_proxy_set_before = 'HTTP_PROXY' in os.environ
-# if not _has_proxy_set_before:
-#     os.environ['HTTP_PROXY'] = 'http://127.0.0.1:7890'
-#     os.environ['HTTPS_PROXY'] = 'http://127.0.0.1:7890'
+from urllib.parse import urlsplit
 
 
 class T:
@@ -169,45 +165,21 @@ def normalize_size(
             return normalize_size((640, 960))
 
 
-def wait_webpage_ready(url: str, timeout: float = 30) -> None:
-    import requests
+def wait_webpage_ready(url: str, timeout: tp.Union[int, float] = 10) -> None:
+    parts = urlsplit(url)
+    host = parts.hostname or 'localhost'
+    port = parts.port or (443 if parts.scheme == 'https' else 80)
 
-    start = time()
+    deadline = monotonic() + timeout
     while True:
-        try:
-            if _has_proxy_set_before:
-                r = requests.head(url)
+        with socket() as s:
+            # a refused connect may sit on the timeout instead of failing fast,
+            # so keep it short and let `deadline` pace the loop.
+            s.settimeout(0.5)
+            if s.connect_ex((host, port)) == 0:
+                print('webpage ready', url, ':ptv4')
+                return
+            if monotonic() >= deadline:
+                raise TimeoutError('timeout waiting for webpage ready', url)
             else:
-                r = requests.head(
-                    url,
-                    proxies={'http': None, 'https': None},  # ty: ignore
-                )
-        except requests.exceptions.ConnectionError as e:
-            if 'WinError 10061' in str(e):
-                print(
-                    'stop checking url since we encountered proxy error',
-                    ':ptv6',
-                )
-                break
-        if 200 <= r.status_code < 400 or r.status_code in (400, 405, 500):
-            print('webpage ready', url, ':ptv4')
-            break
-        elif r.status_code == 502:
-            sleep(0.5)
-            if time() - start > timeout:
-                raise TimeoutError('timeout waiting for webpage ready')
-            continue
-        else:
-            raise Exception(r.status_code)
-
-
-# TODO: not proven yet
-def wait_webpage_ready_2(timeout: float = 30) -> None:
-    from lk_utils.time import timing
-    from lk_utils.time import wait
-
-    with timing():
-        for _ in wait(timeout, 0.2):
-            if os.getenv('PYAPP_WINDOW_TARGET_READY'):
-                print('webpage ready', ':t')
-                break
+                sleep(0.1)
