@@ -105,6 +105,7 @@ def open_with_pywebview(
     url: str,
     **_,
 ) -> None:
+    import os
     import webview  # pip install pywebview
 
     # if icon and sys.platform != 'linux':
@@ -180,7 +181,7 @@ def open_with_pywebview(
     #     webview.start()
     #     return
 
-    webview.create_window(
+    window = webview.create_window(
         title,
         url,
         x=pos[0],
@@ -189,6 +190,42 @@ def open_with_pywebview(
         height=size[1],
         fullscreen=fullscreen,
     )
+
+    if os.name == 'nt' and not fullscreen:
+        # `pywebview` counts `size` as the *whole* window -- its winforms
+        # backend sets `Form.Size` from it, and `Window.resize` goes through
+        # `SetWindowPos` on that frame -- so the page would only get the client
+        # area inside the frame (14.4x37.6 css px at 125% scaling). give the
+        # client area the size that was asked for instead, which is what the
+        # toga backend does, so `size` means the viewport on either of them.
+        def fit_viewport(*_args) -> None:
+            from math import ceil
+            from System import Func, Type  # pythonnet, via pywebview
+
+            form = window.native  # the winforms form pywebview built
+            scale = getattr(form, '_scale', None)
+            if not scale:
+                return
+
+            def apply() -> None:
+                # ceil: the device pixel grid rarely divides the css one
+                # evenly, and handing the page *less* room than it asked for
+                # is what puts a scrollbar in an otherwise fitting window.
+                form.ClientSize = type(form.ClientSize)(
+                    ceil(size[0] * scale), ceil(size[1] * scale)
+                )
+
+            if form.InvokeRequired:  # the form lives on the gui thread
+                form.Invoke(Func[Type](apply))
+            else:
+                apply()
+
+        # `shown` is usually enough, but pywebview sets `Form.Size` while it
+        # initializes, which can land after that first attempt -- so apply
+        # again once the page is up (the call is idempotent).
+        window.events.shown += fit_viewport
+        window.events.loaded += fit_viewport
+
     webview.start(icon=icon)
 
 

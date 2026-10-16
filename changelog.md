@@ -1,6 +1,6 @@
 # CHANGELOG
 
-### 2.3.0 (WIP)
+### 2.3.0 (2026-10-18)
 
 - Read the screen size in logical pixels regardless of dpi awareness.
 - Drop toga's app menu bar.
