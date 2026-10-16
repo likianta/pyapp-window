@@ -297,6 +297,28 @@ def open_with_toga(
         unblock_dlls(f'{site_packages_dir}/pythonnet')
         unblock_dlls(f'{site_packages_dir}/toga_winforms')
 
+    def drop_app_menu(window: toga.MainWindow) -> None:
+        """
+        Let the web view have the whole client area.
+
+        `toga` asks for `size` as *the client area* and then docks an app menu
+        bar at its top, which its `_top_bars_height` reports separately -- so
+        the page would lay out in `size - the bar` (24 logical px at 125%
+        scaling). this window shows a web page and nothing else, so the bar is
+        dropped instead, and `size` means what the page gets.
+
+        the bar is built lazily (`_impl.create_menus`), so that one call is
+        silenced as well -- removing the bar alone would not stop the next
+        rebuild from bringing it back.
+        """
+        impl = window._impl
+        impl.create_menus = lambda: None
+        menu = getattr(impl.native, 'MainMenuStrip', None)
+        if menu is not None:
+            impl.native.MainMenuStrip = None
+            impl.native.Controls.Remove(menu)
+            impl.resize_content()
+
     class MyApp(toga.App):
         _progress_bar: t.Optional[toga.ProgressBar]
 
@@ -390,6 +412,10 @@ def open_with_toga(
         # workaround to suppress warning from
         # `$site-packages/toga_winforms/window.py : line 652 and line 137`
         _on_gain_focus = lambda self: True  # noqa
+
+        def show(self) -> None:
+            drop_app_menu(self)
+            super().show()
 
         # def __init__(self, *args, **kwargs):
         #     super().__init__(*args, **kwargs)

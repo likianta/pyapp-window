@@ -1,14 +1,14 @@
 [project]
 name = "pyapp-window"
-version = "2.2.4"
+version = "2.3.0b0"
 description = "Launching URL with native window in WebView mode."
 authors = [{ name = "Likianta", email = "likianta@foxmail.com" }]
 license = "MIT"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "argsense>=1.1.2",
-    "lk-utils>=3.8.1",
+    "argsense>=2.1.0",
+    "lk-utils>=3.8.2a20",
     "pywebview>=6.2.1; sys_platform == 'linux' and python_version >= '3.9' and python_version < '3.15'",
     # "toga<0.4.7; sys_platform != 'linux' and python_version >= '3.8' and python_version < '3.9'",
     # "toga>=0.5.0,<0.5.3; sys_platform != 'linux' and python_version >= '3.9' and python_version < '3.10'",
@@ -104,6 +104,6 @@ name = "likianta"
 url = "http://localhost:2131/"
 explicit = true
 
-# [tool.uv.sources]
-# argsense = { index = "likianta" }
-# lk-utils = { index = "likianta" }
+[tool.uv.sources]
+argsense = { index = "likianta" }
+lk-utils = { index = "likianta" }

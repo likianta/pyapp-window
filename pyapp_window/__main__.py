@@ -6,7 +6,6 @@ from argsense import cli
 from .opener import open_window
 
 
-@cli
 def launch(
     # primary params
     url: str = '',
@@ -20,7 +19,7 @@ def launch(
     title: str = 'PyApp Window',
 ) -> None:
     """
-    kwargs:
+    params:
         title (-t):
         url (-u):
         port (-p):
