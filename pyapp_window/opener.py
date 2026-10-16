@@ -53,6 +53,10 @@ def open_window(
             trick: use negative value to start from right or bottom.
             if x or y exceeds the screen size, it will be adjusted.
         size: (w, h) or 'fullscreen'.
+            both `pos` and `size` are in logical (css) pixels, i.e. the unit
+            a web page lays out in -- a window asked for (800, 600) gives the
+            page 800x600 css px to draw in (see `get_screen_size`, which reads
+            the display in the same unit).
             trick: use fractional value to set the window size as a ratio of -
             the screen size. for example (0.8, 0.6) will set the window size -
             to 80% width and 60% height of the screen.
@@ -114,6 +118,8 @@ def open_window(
                     (sys.executable, '-m', 'pyapp_window'),
                     ('--title', title),
                     ('--url', url),
+                    # pass the backend on, or the child would pick its own
+                    (('--backend', backend) if backend else ()),
                     ('--pos', '{},{}'.format(*geometry['pos'])),
                     (
                         '--size',

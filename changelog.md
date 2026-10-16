@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### 2.3.0 (WIP)
+
+- Read the screen size in logical pixels regardless of dpi awareness.
+- Drop toga's app menu bar.
+
 ### 2.2.4 (2026-09-23)
 
 - Fix `wait_webpage_ready`.

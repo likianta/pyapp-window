@@ -27,6 +27,17 @@ class T:
 
 @cache
 def get_screen_size() -> T.Size1:
+    """
+    The primary display's size in **logical (css) pixels**, minus the taskbar.
+
+    Logical pixels are the unit this library takes everywhere (both `pos` and
+    `size`), i.e. the one a web page lays out in. It has to be read
+    deliberately on windows: `GetSystemMetrics` answers in physical pixels
+    when the calling process declared itself dpi aware and in logical ones
+    when it did not, so the very same display reports two different screens
+    depending on who asks (see also `normalize_size`, which compares a `size`
+    against this).
+    """
     if sys.platform == 'darwin':
         r = sp.run(
             'echo $(system_profiler SPDisplaysDataType)',
@@ -39,18 +50,28 @@ def get_screen_size() -> T.Size1:
         # print(ret, (w, h), ':v')
         return w, h - 80
     elif sys.platform == 'win32':
-        # https://stackoverflow.com/a/3129524/9695911
         import ctypes
 
         user32 = ctypes.windll.user32
-        width = user32.GetSystemMetrics(0)
-        height = user32.GetSystemMetrics(1)
-        return width, height - 80
+        gdi = ctypes.windll.gdi32
+        # ask gdi for the *physical* desktop size -- 118 and 117 are
+        # `DESKTOPHORZRES` and `DESKTOPVERTRES` -- then undo the scale factor,
+        # so the answer does not depend on this process' dpi awareness.
+        hdc = user32.GetDC(0)
+        w = gdi.GetDeviceCaps(hdc, 118)
+        h = gdi.GetDeviceCaps(hdc, 117)
+        user32.ReleaseDC(0, hdc)
+        if not (w and h):  # pragma: nocover
+            # desktop composition is off (or an exotic driver): there is no
+            # physical size to be had, fall back to whatever we are given.
+            w, h = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+        else:
+            factor = ctypes.windll.shcore.GetScaleFactorForDevice(0) / 100
+            w, h = round(w / factor), round(h / factor)
+        return w, h - 80  # -80: strip the height of the taskbar
 
-    # notice: on windows, the size is taking account of the scale factor!
-    # i.e. if your screen resolution is 3456x2160, and the scale factor is
-    # 150%, the return value will be (2304, 1440) instead of (3456, 2160).
-    # see also `normalize_size : if sys.platform == 'win32'`.
+    # notice: linux (tkinter) already answers in logical pixels.
+    # see also `normalize_size`, which compares a `size` against this.
     import tkinter
 
     root = tkinter.Tk()
@@ -104,9 +125,7 @@ def normalize_position(
 
 
 def normalize_size(
-    size: T.Size0,
-    account_scale_factor: bool = True,
-    oversize_scheme: T.OversizeScheme = 'aspect_ratio',
+    size: T.Size0, oversize_scheme: T.OversizeScheme = 'aspect_ratio'
 ) -> T.Size1:
     if isinstance(size, tuple):
         w, h = size
@@ -123,31 +142,24 @@ def normalize_size(
         assert w > 0 and h > 0
 
         # adapt to screen size
-        if account_scale_factor:
-            if sys.platform == 'win32':
-                # detect scale factor
-                import ctypes
-
-                factor = ctypes.windll.shcore.GetScaleFactorForDevice(0) / 100
-                #   e.g. 1.5, means 150%
-                w, h = round(w / factor), round(h / factor)
-            else:
-                pass  # TODO
-
+        #   note: `size` is in logical pixels, the same unit `get_screen_size`
+        #   returns, so the two are compared as they are -- a window is asked
+        #   for in the unit the page lays out in, and the backends convert it
+        #   to native pixels themselves (`toga` scales by the display's dpi).
         if w > w0:
             if oversize_scheme == 'aspect_ratio':
                 r = h / w
                 w = round(w0 * 0.95)
                 h = round(w * r)
             elif oversize_scheme == 'crop':
-                w = w0 - 10
+                w = w0 - 16
         if h > h0:
             if oversize_scheme == 'aspect_ratio':
                 r = w / h
                 h = round(h0 * 0.95)
                 w = round(h * r)
             elif oversize_scheme == 'crop':
-                h = h0 - 10
+                h = h0 - 16
         assert w <= w0 and h <= h0
 
         # if (w, h) != size:
